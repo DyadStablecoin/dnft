@@ -48,4 +48,11 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
       emit MintNft(id, to);
       return id;
   }
+
+  function drain(address to)
+    external
+      onlyOwner
+  {
+    to.safeTransferETH(address(this).balance);
+  }
 }
