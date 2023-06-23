@@ -16,7 +16,7 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
   uint public insiderMints; // Number of insider mints
   uint public publicMints;  // Number of public mints
 
-  constructor(ERC721 _tickets)
+  constructor()
     ERC721("Dyad NFT", "dNFT") 
     Owned(msg.sender) 
     {}
