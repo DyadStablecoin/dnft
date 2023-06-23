@@ -2,7 +2,8 @@
 pragma solidity = 0.8.17;
 
 interface IDNft {
-  event MintNft(uint indexed id, address indexed to);
+  event NftMinted(uint indexed id, address indexed to);
+  event Drained  (address indexed to, uint amount);
 
   error InsiderMintsExceeded ();
   error InsufficientFunds    ();

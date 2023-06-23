@@ -45,7 +45,7 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
     returns (uint) {
       uint id = totalSupply();
       _safeMint(to, id); // re-entrancy
-      emit MintNft(id, to);
+      emit NftMinted(id, to);
       return id;
   }
 
@@ -53,6 +53,8 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
     external
       onlyOwner
   {
-    to.safeTransferETH(address(this).balance);
+    uint balance = address(this).balance;
+    to.safeTransferETH(balance);
+    emit Drained(to, balance);
   }
 }
