@@ -12,18 +12,14 @@ interface IDNft {
    * @dev Mints an dNFT and transfers it to the given `to` address.
    * 
    * Requirements:
-   * - The sender must be the owner of the `ticket` being used to mint the NFT.
-   * - The `ticket` must not have been used to mint an NFT before.
-   * - The number of public mints must not exceed the maximum limit defined by `PUBLIC_MINTS`.
+   * - msg.value exceeds the minting price
    *
    * Emits a {NFTMinted} event on successful execution.
    *
    * @param to The address to which the minted NFT will be transferred.
    * @return id The ID of the minted NFT.
    *
-   * Throws a {NotTicketOwner} error if the sender is not the owner of the ticket.
-   * Throws a {UsedTicket} error if the ticket has already been used to mint an NFT.
-   * Throws a {PublicMintsExceeded} error if the number of public mints has already reached the defined limit.
+   * Throws a {InsufficientFunds} error if the sender does not provide enough ETH to mint the NFT.
    */
   function mintNft(address to) external payable returns (uint id);
 
