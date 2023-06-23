@@ -4,7 +4,7 @@ pragma solidity =0.8.17;
 import {ERC721, ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import {SafeTransferLib} from "@solmate/src/utils/SafeTransferLib.sol";
 import {Owned} from "@solmate/src/auth/Owned.sol";
-import {IDNft} from "../IDNft.sol";
+import {IDNft} from "./IDNft.sol";
 
 contract DNft is ERC721Enumerable, Owned, IDNft {
   using SafeTransferLib for address;

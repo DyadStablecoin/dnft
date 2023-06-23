@@ -40,3 +40,4 @@ interface IDNft {
    * @return id Id of the new dNFT
    */
   function mintInsiderNft(address to) external returns (uint id);
+}
