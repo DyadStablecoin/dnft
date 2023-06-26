@@ -9,7 +9,7 @@ import {IDNft} from "./IDNft.sol";
 contract DNft is ERC721Enumerable, Owned, IDNft {
   using SafeTransferLib for address;
 
-  uint public constant INSIDER_MINTS  = 1000;
+  uint public constant INSIDER_MINTS  = 800;
   uint public constant START_PRICE    = 0.1   ether;
   uint public constant PRICE_INCREASE = 0.001 ether;
 
