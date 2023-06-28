@@ -26,7 +26,9 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
     external 
     payable
     returns (uint) {
-      if (msg.value < START_PRICE + (PRICE_INCREASE * publicMints)) revert InsufficientFunds();
+      uint price = START_PRICE + (PRICE_INCREASE * publicMints);
+      if (msg.value < price) revert InsufficientFunds();
+      if (msg.value > price) to.safeTransferETH(msg.value - price);
       publicMints++;
       return _mintNft(to);
   }
