@@ -26,11 +26,12 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
     external 
     payable
     returns (uint) {
-      uint price = START_PRICE + (PRICE_INCREASE * publicMints);
+      uint price = START_PRICE + (PRICE_INCREASE * ++publicMints);
       if (msg.value < price) revert InsufficientFunds();
       if (msg.value > price) to.safeTransferETH(msg.value - price);
-      publicMints++;
-      return _mintNft(to);
+      uint id = _mintNft(to);
+      emit MintedNft(id, to);
+      return id;
   }
 
   /// @inheritdoc IDNft
@@ -39,7 +40,9 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
       onlyOwner 
     returns (uint) {
       if (++insiderMints > INSIDER_MINTS) revert InsiderMintsExceeded();
-      return _mintNft(to); 
+      uint id = _mintNft(to); 
+      emit MintedInsiderNft(id, to);
+      return id;
   }
 
   function _mintNft(address to)
@@ -47,7 +50,6 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
     returns (uint) {
       uint id = totalSupply();
       _safeMint(to, id); // re-entrancy
-      emit NftMinted(id, to);
       return id;
   }
 

@@ -2,8 +2,9 @@
 pragma solidity = 0.8.17;
 
 interface IDNft {
-  event NftMinted(uint indexed id, address indexed to);
-  event Drained  (address indexed to, uint amount);
+  event MintedNft       (uint indexed id, address indexed to);
+  event MintedInsiderNft(uint indexed id, address indexed to);
+  event Drained         (address indexed to, uint amount);
 
   error InsiderMintsExceeded ();
   error InsufficientFunds    ();
@@ -37,4 +38,14 @@ interface IDNft {
    * @return id Id of the new dNFT
    */
   function mintInsiderNft(address to) external returns (uint id);
+
+  /**
+   * @notice Drain the contract balance to `to`
+   * @dev Will revert:
+   *      - If not called by contract owner
+   * @dev Emits:
+   *      - Drained(address indexed to, uint amount)
+   * @param to The address to drain the contract balance to
+   */
+  function drain(address to) external;
 }
