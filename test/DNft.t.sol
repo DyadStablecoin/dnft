@@ -15,4 +15,8 @@ contract DNftsTest {
   function test_mintNft() public {
     dNft.mintNft{value: 0.1 ether}(address(this));
   }
+
+  function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
+    return 0x150b7a02;
+  }
 }
