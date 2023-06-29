@@ -13,8 +13,8 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
   uint public constant START_PRICE    = 0.1   ether;
   uint public constant PRICE_INCREASE = 0.001 ether;
 
-  uint public insiderMints; // Number of insider mints
   uint public publicMints;  // Number of public mints
+  uint public insiderMints; // Number of insider mints
 
   constructor()
     ERC721("Dyad NFT", "dNFT") 

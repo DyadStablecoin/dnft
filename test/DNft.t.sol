@@ -32,6 +32,22 @@ contract DNftsTest is Test {
     dNft.mintNft{value: 0.09 ether}(address(this));
   }
 
+  // -------------------- mintInsiderNft --------------------
+  function test_mintInsiderNft() public {
+    dNft.mintInsiderNft(address(this));
+  }
+
+  // -------------------- drain --------------------
+  function test_drain() public {
+    dNft.mintNft{value: 0.1 ether}(address(this));
+    dNft.mintNft{value: 0.101 ether}(address(this));
+    dNft.mintNft{value: 0.102 ether}(address(this));
+    uint balanceBefore = address(this).balance;
+    dNft.drain(address(this));
+    uint balanceAfter = address(this).balance;
+    assertEq(balanceAfter - balanceBefore, 0.303 ether);
+  }
+
   receive() external payable {}
 
   function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
