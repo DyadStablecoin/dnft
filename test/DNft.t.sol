@@ -21,11 +21,15 @@ contract DNftsTest is Test {
     dNft.mintNft{value: 0.101 ether}(address(this));
     dNft.mintNft{value: 0.102 ether}(address(this));
   }
+  function test_mintNft_withRefund() public {
+    dNft.mintNft{value: 10 ether}(address(this));
+  }
   function testCannot_mintNft_insufficientFunds() public {
     vm.expectRevert();
     dNft.mintNft{value: 0.09 ether}(address(this));
   }
 
+  receive() external payable {}
 
   function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
     return 0x150b7a02;
