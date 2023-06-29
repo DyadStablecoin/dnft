@@ -15,7 +15,7 @@ interface IDNft {
    * Requirements:
    * - msg.value exceeds the minting price
    *
-   * Emits a {NFTMinted} event on successful execution.
+   * Emits a {MintedNft} event on successful execution.
    *
    * @param to The address to which the minted NFT will be transferred.
    * @return id The ID of the minted NFT.
@@ -36,6 +36,8 @@ interface IDNft {
    *      - MintNft(address indexed to, uint indexed id)
    * @param to The address to mint the dNFT to
    * @return id Id of the new dNFT
+   * 
+   * Throws a {InsiderMintsExceeded} error if the maximum number of insider mints has been reached.
    */
   function mintInsiderNft(address to) external returns (uint id);
 

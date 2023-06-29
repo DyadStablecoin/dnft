@@ -53,6 +53,7 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
       return id;
   }
 
+  /// @inheritdoc IDNft
   function drain(address to)
     external
       onlyOwner
