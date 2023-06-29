@@ -22,7 +22,10 @@ contract DNftsTest is Test {
     dNft.mintNft{value: 0.102 ether}(address(this));
   }
   function test_mintNft_withRefund() public {
+    uint balanceBefore = address(this).balance;
     dNft.mintNft{value: 10 ether}(address(this));
+    uint balanceAfter = address(this).balance;
+    assertEq(balanceBefore - balanceAfter, 0.1 ether);
   }
   function testCannot_mintNft_insufficientFunds() public {
     vm.expectRevert();
