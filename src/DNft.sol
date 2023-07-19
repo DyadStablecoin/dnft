@@ -9,7 +9,7 @@ import {IDNft} from "./IDNft.sol";
 contract DNft is ERC721Enumerable, Owned, IDNft {
   using SafeTransferLib for address;
 
-  uint public constant INSIDER_MINTS  = 800;
+  uint public constant INSIDER_MINTS  = 4000;
   uint public constant START_PRICE    = 0.1   ether;
   uint public constant PRICE_INCREASE = 0.001 ether;
 
@@ -18,7 +18,7 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
 
   constructor()
     ERC721("Dyad NFT", "dNFT") 
-    Owned(msg.sender) 
+    Owned(0xDeD796De6a14E255487191963dEe436c45995813) 
     {}
 
   /// @inheritdoc IDNft
@@ -49,7 +49,7 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
     private 
     returns (uint) {
       uint id = totalSupply();
-      _safeMint(to, id); // re-entrancy
+      _safeMint(to, id); 
       return id;
   }
 
