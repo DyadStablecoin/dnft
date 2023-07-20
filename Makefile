@@ -31,8 +31,8 @@ gdeploy:
 	forge script script/Deploy.Goerli.s.sol --rpc-url $(GOERLI_RPC) --sender $(PUBLIC_KEY) --broadcast --verify -i 1 -vvvv
 
 # deploy on mainnet
-gdeploy:
-	forge script script/Deploy.Mainnet.s.sol --rpc-url $(GOERLI_RPC) --sender $(PUBLIC_KEY) --broadcast --verify -i 1 -vvvv
+mdeploy:
+	forge script script/Deploy.Mainnet.s.sol --rpc-url $(MAINNET_RPC) --sender $(PUBLIC_KEY) --broadcast --verify -i 1 -vvvv
 
 read:
 	forge script script/Read.s.sol --rpc-url $(GOERLI_RPC) --fork-block-number 8416091
