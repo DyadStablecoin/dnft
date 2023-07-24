@@ -27,6 +27,9 @@ contract SLLTest is Test {
     voteFor();
     voteFor();
     voteFor();
+    dNft.mintNft{value: 1 ether}(address(this));
+    dNft.mintNft{value: 1 ether}(address(this));
+    sll.hasEnoughVotes(RANDOM_VAULT);
   }
 
   receive() external payable {}

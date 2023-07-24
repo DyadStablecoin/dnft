@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
+import "forge-std/console.sol";
+
 import {ISLL} from "./ISLL.sol";
 import {DNft} from "./DNft.sol";
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 
 contract SLL is ISLL {
-  uint public constant THRESHOLD = 5;
+  using FixedPointMathLib for uint; 
+  uint public constant THRESHOLD = 500000000000000000; // 50%
 
   DNft public immutable dNft;
 
@@ -31,9 +34,12 @@ contract SLL is ISLL {
     votes[vault] -= 1;
   }
 
-  function hasEnoughVotes(address vault) external view returns (bool) {
-    if (votes[vault] / dNft.totalSupply() > THRESHOLD) { return true; }
-    return false;
+  function countVotes(address vault) public view returns (uint) {
+    return votes[vault].divWadDown(dNft.totalSupply());
   }
 
+  function hasEnoughVotes(address vault) external view returns (bool) {
+    if (countVotes(vault) > THRESHOLD) { return true; }
+    return false;
+  }
 }
