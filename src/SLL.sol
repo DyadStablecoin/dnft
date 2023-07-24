@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-import "forge-std/console.sol";
-
 import {ISLL} from "./ISLL.sol";
 import {DNft} from "./DNft.sol";
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
@@ -16,9 +14,7 @@ contract SLL is ISLL {
   mapping (address => uint256) public votes; // vault   => votes
   mapping (uint    => bool)    public voted; // DNft id => voted
 
-  constructor(DNft _dNft) {
-    dNft = _dNft;
-  }
+  constructor(DNft _dNft) { dNft = _dNft; }
 
   function voteFor(uint id, address vault) external {
     if (dNft.ownerOf(id) != msg.sender) { revert OnlyOwner(); }
