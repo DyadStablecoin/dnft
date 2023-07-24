@@ -7,7 +7,8 @@ import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 
 contract SLL is ISLL {
   using FixedPointMathLib for uint; 
-  uint public constant THRESHOLD = 500000000000000000; // 50%
+
+  uint public constant THRESHOLD = 200000000000000000; // 20%
 
   DNft public immutable dNft;
 
