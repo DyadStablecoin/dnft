@@ -3,6 +3,7 @@ pragma solidity =0.8.17;
 
 import {ISLL} from "./ISLL.sol";
 import {DNft} from "./DNft.sol";
+import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 
 contract SLL is ISLL {
   uint public constant THRESHOLD = 5;
@@ -30,7 +31,7 @@ contract SLL is ISLL {
     votes[vault] -= 1;
   }
 
-  function isValid(address vault) external view returns (bool) {
+  function hasEnoughVotes(address vault) external view returns (bool) {
     if (votes[vault] / dNft.totalSupply() > THRESHOLD) { return true; }
     return false;
   }

@@ -18,7 +18,9 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
 
   constructor()
     ERC721("Dyad NFT", "dNFT") 
-    Owned(0xDeD796De6a14E255487191963dEe436c45995813) 
+    // actual deployment
+    // Owned(0xDeD796De6a14E255487191963dEe436c45995813) 
+    Owned(msg.sender) 
     {}
 
   /// @inheritdoc IDNft
