@@ -11,13 +11,11 @@ contract SLL is ISLL {
 
   DNft public immutable dNft;
 
-  uint public constant THRESHOLD  = 200000000000000000; // 20%
-  uint public constant MAX_VAULTS = 5;
+  uint public constant THRESHOLD  = 660000000000000000; // 66%
 
-  address[] public licensedVaults; // Length is always < MAX_VAULTS
-
-  mapping (address => uint256) public votes; // vault   => votes
-  mapping (uint    => bool)    public voted; // DNft id => voted
+  mapping (address => bool)    public vaults; // vault   => is licensed
+  mapping (address => uint256) public votes;  // vault   => votes
+  mapping (uint    => bool)    public voted;  // dNft id => voted
 
   constructor(DNft _dNft) { dNft = _dNft; }
 
@@ -44,27 +42,8 @@ contract SLL is ISLL {
     return false;
   }
 
-  function add(address vault) external returns (bool) {
-    if (!hasEnoughVotes(vault)) return false;
-    if (licensedVaults.length < MAX_VAULTS) {
-      licensedVaults.push(vault); 
-      return true;
-    }
-
-    uint indexOfLeastVotes = 0;
-    uint leastVotes        = type(uint256).max;
-
-    for (uint i = 0; i < MAX_VAULTS; i++) {
-      if (countVotes(licensedVaults[i]) < leastVotes) {
-        indexOfLeastVotes = i;
-      }
-    }
-
-    if (countVotes(vault) > leastVotes) {
-      licensedVaults[indexOfLeastVotes] = vault;
-      return true;
-    }
-
-    return false;
+  function license(address vault) external {
+    hasEnoughVotes(vault) ? vaults[vault] = true 
+                          : vaults[vault] = false;
   }
 }
