@@ -5,4 +5,24 @@ interface ISLL {
   error OnlyOwner();
   error AlreadyVotedFor();
   error AlreadyVotedAgainst();
+
+  /**
+   * @notice Vote for a vault to be licensed.
+   * @param id The id of the DNft to vote for.
+   * @param vault The vault to vote for.
+   */
+  function vote(uint id, address vault) external;
+
+  /**
+   * @notice Remove a vote for a vault to be licensed.
+   * @param id The id of the DNft to vote for.
+   * @param vault The vault to vote for.
+   */
+  function removeVote(uint id, address vault) external;
+
+  /**
+   * @notice License a vault.
+   * @param vault The vault to license.
+   */
+  function license(address vault) external;
 }
