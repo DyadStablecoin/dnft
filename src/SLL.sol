@@ -13,9 +13,9 @@ contract SLL is ISLL {
 
   uint public constant THRESHOLD  = 660000000000000000; // 66%
 
-  mapping (address => bool)    public vaults; // vault   => is licensed
-  mapping (address => uint256) public votes;  // vault   => votes
-  mapping (uint    => bool)    public voted;  // dNft id => voted
+  mapping (address => bool) public vaults; // vault   => is licensed
+  mapping (address => uint) public votes;  // vault   => votes
+  mapping (uint    => bool) public voted;  // dNft id => voted
 
   constructor(DNft _dNft) { dNft = _dNft; }
 
@@ -33,17 +33,9 @@ contract SLL is ISLL {
     votes[vault] -= 1;
   }
 
-  function countVotes(address vault) public view returns (uint) {
-    return votes[vault].divWadDown(dNft.totalSupply());
-  }
-
-  function hasEnoughVotes(address vault) public view returns (bool) {
-    if (countVotes(vault) > THRESHOLD) { return true; }
-    return false;
-  }
-
   function license(address vault) external {
-    hasEnoughVotes(vault) ? vaults[vault] = true 
-                          : vaults[vault] = false;
+    votes[vault].divWadDown(dNft.totalSupply()) > THRESHOLD 
+      ? vaults[vault] = true 
+      : vaults[vault] = false;
   }
 }
