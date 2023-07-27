@@ -3,8 +3,8 @@ pragma solidity =0.8.17;
 
 interface ISLL {
   error OnlyOwner();
-  error AlreadyVotedFor();
-  error AlreadyVotedAgainst();
+  error VotedBefore();
+  error NotVotedBefore();
 
   /**
    * @notice Vote for a vault to be licensed.

@@ -11,7 +11,7 @@ contract SLL is ISLL {
 
   DNft public immutable dNft;
 
-  uint public constant THRESHOLD  = 660000000000000000; // 66%
+  uint public constant THRESHOLD  = 66_0000000000000000; // 66%
 
   mapping (address => bool) public vaults; // vault   => is licensed
   mapping (address => uint) public votes;  // vault   => votes
@@ -22,7 +22,7 @@ contract SLL is ISLL {
   /// @inheritdoc ISLL
   function vote(uint id, address vault) external {
     if (dNft.ownerOf(id) != msg.sender) { revert OnlyOwner(); }
-    if (voted[id])                      { revert AlreadyVotedFor(); }
+    if (voted[id])                      { revert VotedBefore(); }
     voted[id]     = true;
     votes[vault] += 1;
   }
@@ -30,7 +30,7 @@ contract SLL is ISLL {
   /// @inheritdoc ISLL
   function removeVote(uint id, address vault) external {
     if (dNft.ownerOf(id) != msg.sender) { revert OnlyOwner(); }
-    if (!voted[id])                     { revert AlreadyVotedAgainst(); }
+    if (!voted[id])                     { revert NotVotedBefore(); }
     voted[id]     = false;
     votes[vault] -= 1;
   }
