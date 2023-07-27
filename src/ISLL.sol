@@ -5,6 +5,7 @@ interface ISLL {
   error OnlyOwner();
   error VotedBefore();
   error NotVotedBefore();
+  error NotLicensed();
 
   /**
    * @notice Vote for a vault to be licensed.

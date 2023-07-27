@@ -3,6 +3,7 @@ pragma solidity =0.8.17;
 
 import {ISLL} from "./ISLL.sol";
 import {DNft} from "./DNft.sol";
+import {Dyad} from "./Dyad.sol";
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 
 // SLL := Social Licensing Layer
@@ -10,14 +11,21 @@ contract SLL is ISLL {
   using FixedPointMathLib for uint; 
 
   DNft public immutable dNft;
+  Dyad public immutable dyad;
 
   uint public constant THRESHOLD  = 66_0000000000000000; // 66%
 
-  mapping (address => bool) public vaults; // vault   => is licensed
-  mapping (address => uint) public votes;  // vault   => votes
-  mapping (uint    => bool) public voted;  // dNft id => voted
+  mapping (address => bool) public licensedVaults; // vault   => is licensed
+  mapping (address => uint) public votes;          // vault   => votes
+  mapping (uint    => bool) public voted;          // dNft id => voted
 
-  constructor(DNft _dNft) { dNft = _dNft; }
+  constructor(
+    DNft _dNft,
+    Dyad _dyad
+  ) { 
+    dNft = _dNft;
+    dyad = _dyad;
+  }
 
   /// @inheritdoc ISLL
   function vote(uint id, address vault) external {
@@ -38,7 +46,17 @@ contract SLL is ISLL {
   /// @inheritdoc ISLL
   function license(address vault) external {
     votes[vault].divWadDown(dNft.totalSupply()) > THRESHOLD 
-      ? vaults[vault] = true 
-      : vaults[vault] = false;
+      ? licensedVaults[vault] = true 
+      : licensedVaults[vault] = false;
+  }
+
+  function mint(address to, uint amount) external {
+    if (!licensedVaults[msg.sender]) { revert NotLicensed(); }
+    dyad.mint(to, amount);
+  }
+
+  function burn(address from, uint amount) external {
+    if (!licensedVaults[msg.sender]) { revert NotLicensed(); }
+    dyad.burn(from, amount);
   }
 }
