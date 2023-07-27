@@ -45,16 +45,25 @@ contract SLL is ISLL {
 
   /// @inheritdoc ISLL
   function license(address vault) external {
-    votes[vault].divWadDown(dNft.totalSupply()) > THRESHOLD 
-      ? licensedVaults[vault] = true 
-      : licensedVaults[vault] = false;
+    if (votes[vault].divWadDown(dNft.totalSupply()) > THRESHOLD) {
+      licensedVaults[vault] = true;
+    }
   }
 
+  /// @inheritdoc ISLL
+  function removeLicense(address vault) external {
+    if (votes[vault].divWadDown(dNft.totalSupply()) <= THRESHOLD) {
+      licensedVaults[vault] = false;
+    }
+  }
+
+  /// @inheritdoc ISLL
   function mint(address to, uint amount) external {
     if (!licensedVaults[msg.sender]) { revert NotLicensed(); }
     dyad.mint(to, amount);
   }
 
+  /// @inheritdoc ISLL
   function burn(address from, uint amount) external {
     if (!licensedVaults[msg.sender]) { revert NotLicensed(); }
     dyad.burn(from, amount);

@@ -26,4 +26,14 @@ interface ISLL {
    * @param vault The vault to license.
    */
   function license(address vault) external;
+
+  /**
+   * @notice Remove license from a vault.
+   * @param vault The vault to license.
+   */
+  function removeLicense(address vault) external;
+
+  function mint(address to, uint amount) external;
+
+  function burn(address to, uint amount) external;
 }
