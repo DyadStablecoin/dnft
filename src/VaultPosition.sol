@@ -7,9 +7,15 @@ import {ERC721} from "@solmate/src/tokens/ERC721.sol";
 import {ERC4626} from "@solmate/src/mixins/ERC4626.sol";
 
 contract Vault is IVaultPosition, ERC721 {
+  enum Status {
+    Open,
+    Closed
+  }
+
   struct Position {
     uint start;
     uint end;
+    Status status;
   }
 
   // dNft id => (position id => position)
