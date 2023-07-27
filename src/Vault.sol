@@ -30,6 +30,14 @@ contract Vault is IVault, ERC4626 {
       oracle = _oracle;
   }
 
+  function deposit(uint id, uint256 assets, address receiver) external {
+    super.deposit(assets, receiver);
+  }
+
+  function deposit(uint256 assets, address receiver) public override returns (uint shares) {
+    revert NotImplemented();
+  }
+
   function totalAssets() public view override returns (uint) {
     return asset.balanceOf(address(this));
   }
