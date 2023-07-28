@@ -19,7 +19,8 @@ contract Vault is IVault, ERC4626 {
   VaultPosition public immutable vaultPosition;
   IAggregatorV3 public immutable oracle;
 
-  mapping (uint => uint) public xp; // id => xp
+  mapping (uint => uint) public xp; // dNftId => xp
+  uint                   public totalXp;
 
   constructor(
       DNft          _dNft,
@@ -51,6 +52,8 @@ contract Vault is IVault, ERC4626 {
         status: VaultPosition.Status.Open
       })
     );
+
+    xp[dNftId] = 100;
   }
 
   function deposit(uint256 assets, address receiver) public override returns (uint shares) {
