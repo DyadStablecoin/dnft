@@ -17,22 +17,7 @@ contract Vault is IVault, ERC4626 {
   DNft          public immutable dNft;
   IAggregatorV3 public immutable oracle;
 
-
-  enum Status {
-    Open,
-    Cancelled,
-    Closed
-  }
-
-  struct Position {
-    uint start;
-    uint end;
-    Status status;
-  }
-
-  // dNft id => (position id => position)
-  mapping (uint => mapping (uint => Position)) public positions; 
-  mapping (uint => uint) public xp;      // dNftId => xp
+  mapping (uint => uint) public xp; // dNftId => xp
   uint                   public totalXP;
 
   uint public totalPositions;
@@ -57,8 +42,6 @@ contract Vault is IVault, ERC4626 {
     super.deposit(assets, receiver);
     uint lockSizeUSD = assets.mulWadDown(_collatPrice());
     uint startingXP  = xp[dNftId];
-    uint poolSize    = asset.balanceOf(address(this)).mulWadDown(_collatPrice());
-
     uint xpGained    = lockSizeUSD.mulWadDown(lockInSeconds);
     xpGained         = xpGained.mulWadDown(uint(1).divWadDown(uint(1) + startingXP.divWadDown(totalXP)));
     xp[dNftId]       = xpGained;
