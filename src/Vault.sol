@@ -2,7 +2,6 @@
 pragma solidity =0.8.17;
 
 import {DNft} from "./DNft.sol";
-import {VaultPosition} from "./VaultPosition.sol";
 import {IVault} from "./interfaces/IVault.sol";
 import {IAggregatorV3} from "./interfaces/IAggregatorV3.sol";
 
@@ -16,22 +15,36 @@ contract Vault is IVault, ERC4626 {
   using SafeCast          for int;
 
   DNft          public immutable dNft;
-  VaultPosition public immutable vaultPosition;
   IAggregatorV3 public immutable oracle;
 
-  mapping (uint => uint) public xp; // dNftId => xp
+
+  enum Status {
+    Open,
+    Cancelled,
+    Closed
+  }
+
+  struct Position {
+    uint start;
+    uint end;
+    Status status;
+  }
+
+  // dNft id => (position id => position)
+  mapping (uint => mapping (uint => Position)) public positions; 
+  mapping (uint => uint) public xp;      // dNftId => xp
   uint                   public totalXP;
+
+  uint public totalPositions;
 
   constructor(
       DNft          _dNft,
-      VaultPosition _vaultPosition,
       IAggregatorV3 _oracle,
       ERC20         _asset,
       string memory _name,
       string memory _symbol
   ) ERC4626(_asset, _name, _symbol) {
       dNft          = _dNft;
-      vaultPosition = _vaultPosition;
       oracle        = _oracle;
   }
 
@@ -42,17 +55,6 @@ contract Vault is IVault, ERC4626 {
     uint    lockInSeconds
   ) external {
     super.deposit(assets, receiver);
-    uint positionId = vaultPosition.mint(dNft.ownerOf(dNftId));
-    vaultPosition.addPosition(
-      dNftId, 
-      positionId, 
-      VaultPosition.Position({
-        start:  block.timestamp,
-        end:    block.timestamp + lockInSeconds,
-        status: VaultPosition.Status.Open
-      })
-    );
-
     uint lockSizeUSD = assets.mulWadDown(_collatPrice());
     uint startingXP  = xp[dNftId];
     uint poolSize    = asset.balanceOf(address(this)).mulWadDown(_collatPrice());
