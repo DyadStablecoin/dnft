@@ -20,7 +20,7 @@ contract Vault is IVault, ERC4626 {
   IAggregatorV3 public immutable oracle;
 
   mapping (uint => uint) public xp; // dNftId => xp
-  uint                   public totalXp;
+  uint                   public totalXP;
 
   constructor(
       DNft          _dNft,
@@ -53,7 +53,14 @@ contract Vault is IVault, ERC4626 {
       })
     );
 
-    xp[dNftId] = 100;
+    uint lockSizeUSD = assets.mulWadDown(_collatPrice());
+    uint startingXP  = xp[dNftId];
+    uint poolSize    = asset.balanceOf(address(this)).mulWadDown(_collatPrice());
+
+    uint xpGained    = lockSizeUSD.mulWadDown(lockInSeconds);
+    xpGained         = xpGained.mulWadDown(uint(1).divWadDown(uint(1) + startingXP.divWadDown(totalXP)));
+    xp[dNftId]       = xpGained;
+    totalXP         += xpGained;
   }
 
   function deposit(uint256 assets, address receiver) public override returns (uint shares) {
