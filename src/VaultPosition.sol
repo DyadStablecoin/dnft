@@ -6,9 +6,10 @@ import {IVaultPosition} from "./interfaces/IVaultPosition.sol";
 import {ERC721} from "@solmate/src/tokens/ERC721.sol";
 import {ERC4626} from "@solmate/src/mixins/ERC4626.sol";
 
-contract Vault is IVaultPosition, ERC721 {
+contract VaultPosition is IVaultPosition, ERC721 {
   enum Status {
     Open,
+    Cancelled,
     Closed
   }
 
@@ -21,12 +22,44 @@ contract Vault is IVaultPosition, ERC721 {
   // dNft id => (position id => position)
   mapping (uint => mapping (uint => Position)) public positions; 
 
+  uint public totalPositions;
+
   constructor(
     string memory name, 
     string memory symbol 
   ) ERC721(name, symbol) {}
 
-  function tokenURI(uint256 tokenId) 
+  function addPosition(
+    uint dNftId, 
+    uint positionId,
+    Position memory position
+  ) 
+    // TODO: only owner
+    external {
+      positions[dNftId][positionId] = position;
+  }
+
+  function mint(address to) 
+    external 
+    // TODO: only owner
+    returns (uint id) {
+      id = totalPositions;
+      _mint(to, id);
+      totalPositions++;
+      return id;
+  }
+
+  function burn(uint id) 
+    external 
+    // TODO: only owner
+    returns (uint) {
+      id = totalPositions;
+      _burn(id);
+      totalPositions--;
+      return id;
+  }
+
+  function tokenURI(uint tokenId) 
     public 
     pure 
     override 

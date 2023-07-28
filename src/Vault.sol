@@ -2,6 +2,7 @@
 pragma solidity =0.8.17;
 
 import {DNft} from "./DNft.sol";
+import {VaultPosition} from "./VaultPosition.sol";
 import {IVault} from "./interfaces/IVault.sol";
 import {IAggregatorV3} from "./interfaces/IAggregatorV3.sol";
 
@@ -14,24 +15,42 @@ contract Vault is IVault, ERC4626 {
   using FixedPointMathLib for uint;
   using SafeCast          for int;
 
-  IAggregatorV3 public immutable oracle;
   DNft          public immutable dNft;
+  VaultPosition public immutable vaultPosition;
+  IAggregatorV3 public immutable oracle;
 
   mapping (uint => uint) public xp; // id => xp
 
   constructor(
       DNft          _dNft,
+      VaultPosition _vaultPosition,
       IAggregatorV3 _oracle,
       ERC20         _asset,
       string memory _name,
       string memory _symbol
   ) ERC4626(_asset, _name, _symbol) {
-      dNft   = _dNft;
-      oracle = _oracle;
+      dNft          = _dNft;
+      vaultPosition = _vaultPosition;
+      oracle        = _oracle;
   }
 
-  function deposit(uint id, uint256 assets, address receiver) external {
+  function deposit(
+    uint    dNftId,
+    uint    assets,
+    address receiver, 
+    uint    lockInSeconds
+  ) external {
     super.deposit(assets, receiver);
+    uint positionId = vaultPosition.mint(dNft.ownerOf(dNftId));
+    vaultPosition.addPosition(
+      dNftId, 
+      positionId, 
+      VaultPosition.Position({
+        start:  block.timestamp,
+        end:    block.timestamp + lockInSeconds,
+        status: VaultPosition.Status.Open
+      })
+    );
   }
 
   function deposit(uint256 assets, address receiver) public override returns (uint shares) {
