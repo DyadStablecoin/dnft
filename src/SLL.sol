@@ -31,7 +31,7 @@ contract SLL is ISLL {
   /// @inheritdoc ISLL
   function vote(uint id, address vault) external {
     if (dNft.ownerOf(id) != msg.sender) { revert OnlyOwner(); }
-    if (hasVoted[id])                      { revert VotedBefore(); }
+    if (hasVoted[id])                   { revert VotedBefore(); }
     hasVoted[id]  = true;
     votes[vault] += 1;
   }
@@ -39,7 +39,7 @@ contract SLL is ISLL {
   /// @inheritdoc ISLL
   function removeVote(uint id, address vault) external {
     if (dNft.ownerOf(id) != msg.sender) { revert OnlyOwner(); }
-    if (!hasVoted[id])                     { revert NotVotedBefore(); }
+    if (!hasVoted[id])                  { revert NotVotedBefore(); }
     hasVoted[id]  = false;
     votes[vault] -= 1;
   }
