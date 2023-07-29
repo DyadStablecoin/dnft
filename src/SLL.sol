@@ -60,13 +60,13 @@ contract SLL is ISLL {
 
   /// @inheritdoc ISLL
   function mint(address to, uint amount) external {
-    if (!licensedVaults[msg.sender]) { revert NotLicensed(); }
+    if (!licensedVaults[msg.sender]) { revert NotLicensedToMint(); }
     dyad.mint(to, amount);
   }
 
   /// @inheritdoc ISLL
   function burn(address from, uint amount) external {
-    if (!licensedVaults[msg.sender]) { revert NotLicensed(); }
+    if (!licensedVaults[msg.sender]) { revert NotLicensedToBurn(); }
     dyad.burn(from, amount);
   }
 }
