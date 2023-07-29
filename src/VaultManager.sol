@@ -25,15 +25,7 @@ contract VaultManager is IVaultManager {
     if (!sll.isLicensed(vault))          { revert VaultNotLicensed(); }
     vaults[id].push(vault);
     isDNftVault[id][vault] = true;
-  }
-
-  function replace(uint id, address vault, uint index) external {
-    if (dNft.ownerOf(id) != msg.sender) { revert OnlyOwner(); }
-    if (!sll.isLicensed(vault))         { revert VaultNotLicensed(); }
-    address oldVault          = vaults[id][index];
-    isDNftVault[id][oldVault] = false;
-    isDNftVault[id][vault]    = true;
-    vaults     [id][index]    = vault;
+    emit Added(id, vault);
   }
 
   function remove(uint id, uint index) external {
@@ -47,5 +39,6 @@ contract VaultManager is IVaultManager {
       unchecked { i++; }
     }
     vaults[id].pop();
+    emit Removed(id, oldVault);
   }
 }
