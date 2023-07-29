@@ -5,6 +5,8 @@ interface ISLL {
   error OnlyOwner();
   error VotedBefore();
   error NotVotedBefore();
+  error NotEnoughVotes();
+  error TooManyVotes();
   error NotLicensedToMint();
   error NotLicensedToBurn();
 

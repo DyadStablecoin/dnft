@@ -28,10 +28,53 @@ contract SLLTest is Test {
     return id;
   }
 
+  ///////////////////////////
+  // vote
   function test_vote() public {
     uint id = vote();
-    assertEq(sll.votes(RANDOM_VAULT), 1);
     assertEq(sll.voted(id), true);
+    assertEq(sll.votes(RANDOM_VAULT), 1);
+  }
+
+  function testRevert_vote_onlyOwner() public {
+    uint id = vote();
+    vm.prank(address(0));
+    vm.expectRevert();
+    sll.vote(id, RANDOM_VAULT);
+  }
+
+  function testRevert_vote_votedBefore() public {
+    uint id = vote();
+    vm.expectRevert();
+    sll.vote(id, RANDOM_VAULT);
+  }
+
+  ///////////////////////////
+  // removeVote
+  function test_removeVote() public {
+    uint id = vote();
+    sll.removeVote(id, RANDOM_VAULT);
+    assertEq(sll.voted(id), false);
+    assertEq(sll.votes(RANDOM_VAULT), 0);
+  }
+
+  function testRevert_removeVote_onlyOwner() public {
+    uint id = vote();
+    vm.prank(address(0));
+    vm.expectRevert();
+    sll.removeVote(id, RANDOM_VAULT);
+  }
+
+  function testRevert_removeVote_notVotedBefore() public {
+    uint id = dNft.mintNft{value: 1 ether}(address(this));
+    vm.expectRevert();
+    sll.removeVote(id, RANDOM_VAULT);
+  }
+
+  ///////////////////////////
+  // license
+  function test_license() public {
+
   }
 
   receive() external payable {}

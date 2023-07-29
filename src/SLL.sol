@@ -46,16 +46,18 @@ contract SLL is ISLL {
 
   /// @inheritdoc ISLL
   function license(address vault) external {
-    if (votes[vault].divWadDown(dNft.totalSupply()) > THRESHOLD) {
-      licensedVaults[vault] = true;
+    if (votes[vault].divWadDown(dNft.totalSupply()) <= THRESHOLD) {
+      revert NotEnoughVotes();
     }
+    licensedVaults[vault] = true;
   }
 
   /// @inheritdoc ISLL
   function removeLicense(address vault) external {
-    if (votes[vault].divWadDown(dNft.totalSupply()) <= THRESHOLD) {
-      licensedVaults[vault] = false;
+    if (votes[vault].divWadDown(dNft.totalSupply()) > THRESHOLD) {
+      revert TooManyVotes();
     }
+    licensedVaults[vault] = false;
   }
 
   /// @inheritdoc ISLL
