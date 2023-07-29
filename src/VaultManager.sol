@@ -9,7 +9,7 @@ contract VaultManager is IVaultManager {
   DNft public immutable dNft;
   SLL  public immutable sll;
 
-  uint public constant MAX_VAULTS  = 5;
+  uint public constant MAX_VAULTS = 5;
 
   mapping (uint => address[])                 public vaults; 
   mapping (uint => mapping (address => uint)) public vaultIndex;
@@ -21,9 +21,9 @@ contract VaultManager is IVaultManager {
   }
 
   function add(uint id, address vault) external {
-    if (dNft.ownerOf(id)  != msg.sender) { revert OnlyOwner(); }
-    if (vaults[id].length  > MAX_VAULTS) { revert TooManyVaults(); }
-    if (!sll.isLicensed(vault))          { revert VaultNotLicensed(); }
+    if (dNft.ownerOf(id)  != msg.sender) revert OnlyOwner(); 
+    if (vaults[id].length  > MAX_VAULTS) revert TooManyVaults();
+    if (!sll.isLicensed(vault))          revert VaultNotLicensed();
     vaults[id].push(vault);
     isDNftVault[id][vault] = true;
     vaultIndex [id][vault] = vaults[id].length - 1;
@@ -31,8 +31,8 @@ contract VaultManager is IVaultManager {
   }
 
   function remove(uint id, address vault) external {
-    if (dNft.ownerOf(id)  != msg.sender) { revert OnlyOwner(); }
-    if (!isDNftVault[id][vault])         { revert NotDNftVault(); }
+    if (dNft.ownerOf(id)  != msg.sender) revert OnlyOwner();
+    if (!isDNftVault[id][vault])         revert NotDNftVault();
     uint index        = vaultIndex[id][vault];
     uint vaultsLength = vaults[id].length;
     address oldVault  = vaults[id][index];
