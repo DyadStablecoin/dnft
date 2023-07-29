@@ -22,12 +22,14 @@ contract VaultManager is IVaultManager {
   function add(uint id, address vault) external {
     if (dNft.ownerOf(id)  != msg.sender) { revert OnlyOwner(); }
     if (vaults[id].length  > MAX_VAULTS) { revert TooManyVaults(); }
+    if (!sll.isLicensed(vault))          { revert VaultNotLicensed(); }
     vaults[id].push(vault);
     isDNftVault[id][vault] = true;
   }
 
   function replace(uint id, address vault, uint index) external {
     if (dNft.ownerOf(id) != msg.sender) { revert OnlyOwner(); }
+    if (!sll.isLicensed(vault))         { revert VaultNotLicensed(); }
     address oldVault          = vaults[id][index];
     isDNftVault[id][oldVault] = false;
     isDNftVault[id][vault]    = true;
