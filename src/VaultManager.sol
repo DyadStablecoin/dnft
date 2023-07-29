@@ -33,9 +33,9 @@ contract VaultManager is IVaultManager {
   function remove(uint id, address vault) external {
     if (dNft.ownerOf(id)  != msg.sender) { revert OnlyOwner(); }
     if (!isDNftVault[id][vault])         { revert NotDNftVault(); }
-    uint index                = vaultIndex[id][vault];
-    uint vaultsLength         = vaults[id].length;
-    address oldVault          = vaults[id][index];
+    uint index        = vaultIndex[id][vault];
+    uint vaultsLength = vaults[id].length;
+    address oldVault  = vaults[id][index];
     for (uint i = index; i < vaultsLength - 1; ) {
       vaults[i] = vaults[i+1];
       unchecked { i++; }
