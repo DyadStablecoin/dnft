@@ -32,7 +32,7 @@ contract SLLTest is Test {
   // vote
   function test_vote() public {
     uint id = vote();
-    assertEq(sll.voted(id), true);
+    assertEq(sll.hasVoted(id), true);
     assertEq(sll.votes(RANDOM_VAULT), 1);
   }
 
@@ -54,7 +54,7 @@ contract SLLTest is Test {
   function test_removeVote() public {
     uint id = vote();
     sll.removeVote(id, RANDOM_VAULT);
-    assertEq(sll.voted(id), false);
+    assertEq(sll.hasVoted(id), false);
     assertEq(sll.votes(RANDOM_VAULT), 0);
   }
 
@@ -74,7 +74,22 @@ contract SLLTest is Test {
   ///////////////////////////
   // license
   function test_license() public {
+    vote();
+    assertFalse(sll.isLicensed(RANDOM_VAULT));
+    sll.license(RANDOM_VAULT);
+    assertTrue(sll.isLicensed(RANDOM_VAULT));
+  }
 
+  ///////////////////////////
+  // removeLicense
+  function test_removeLicense() public {
+    uint id = vote();
+    assertFalse(sll.isLicensed(RANDOM_VAULT));
+    sll.license(RANDOM_VAULT);
+    assertTrue(sll.isLicensed(RANDOM_VAULT));
+    sll.removeVote(id, RANDOM_VAULT);
+    sll.removeLicense(RANDOM_VAULT);
+    assertFalse(sll.isLicensed(RANDOM_VAULT));
   }
 
   receive() external payable {}

@@ -16,9 +16,9 @@ contract SLL is ISLL {
 
   uint public constant THRESHOLD  = 66_0000000000000000; // 66%
 
-  mapping (address => bool) public licensedVaults; // vault   => is licensed
-  mapping (address => uint) public votes;          // vault   => votes
-  mapping (uint    => bool) public voted;          // dNft id => voted
+  mapping (address => uint) public votes;      // vault   => votes
+  mapping (uint    => bool) public hasVoted;   // dNft id => voted
+  mapping (address => bool) public isLicensed; // vault   => is licensed
 
   constructor(
     DNft _dNft,
@@ -31,16 +31,16 @@ contract SLL is ISLL {
   /// @inheritdoc ISLL
   function vote(uint id, address vault) external {
     if (dNft.ownerOf(id) != msg.sender) { revert OnlyOwner(); }
-    if (voted[id])                      { revert VotedBefore(); }
-    voted[id]     = true;
+    if (hasVoted[id])                      { revert VotedBefore(); }
+    hasVoted[id]  = true;
     votes[vault] += 1;
   }
 
   /// @inheritdoc ISLL
   function removeVote(uint id, address vault) external {
     if (dNft.ownerOf(id) != msg.sender) { revert OnlyOwner(); }
-    if (!voted[id])                     { revert NotVotedBefore(); }
-    voted[id]     = false;
+    if (!hasVoted[id])                     { revert NotVotedBefore(); }
+    hasVoted[id]  = false;
     votes[vault] -= 1;
   }
 
@@ -49,7 +49,7 @@ contract SLL is ISLL {
     if (votes[vault].divWadDown(dNft.totalSupply()) <= THRESHOLD) {
       revert NotEnoughVotes();
     }
-    licensedVaults[vault] = true;
+    isLicensed[vault] = true;
   }
 
   /// @inheritdoc ISLL
@@ -57,18 +57,18 @@ contract SLL is ISLL {
     if (votes[vault].divWadDown(dNft.totalSupply()) > THRESHOLD) {
       revert TooManyVotes();
     }
-    licensedVaults[vault] = false;
+    isLicensed[vault] = false;
   }
 
   /// @inheritdoc ISLL
   function mint(address to, uint amount) external {
-    if (!licensedVaults[msg.sender]) { revert NotLicensedToMint(); }
+    if (!isLicensed[msg.sender]) { revert NotLicensedToMint(); }
     dyad.mint(to, amount);
   }
 
   /// @inheritdoc ISLL
   function burn(address from, uint amount) external {
-    if (!licensedVaults[msg.sender]) { revert NotLicensedToBurn(); }
+    if (!isLicensed[msg.sender]) { revert NotLicensedToBurn(); }
     dyad.burn(from, amount);
   }
 }
