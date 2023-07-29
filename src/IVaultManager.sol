@@ -6,6 +6,7 @@ interface IVaultManager {
   error VaultNotLicensed();
   error TooManyVaults();
   error IndexOutOfBounds();
+  error NotDNftVault();
 
   event Added  (uint indexed id, address indexed vault);
   event Removed(uint indexed id, address indexed vault);

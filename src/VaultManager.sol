@@ -12,6 +12,7 @@ contract VaultManager is IVaultManager {
   uint public constant MAX_VAULTS  = 5;
 
   mapping (uint => address[])                 public vaults; 
+  mapping (uint => mapping (address => uint)) public vaultIndex;
   mapping (uint => mapping (address => bool)) public isDNftVault;
 
   constructor(DNft _dNft, SLL _sll) {
@@ -25,20 +26,23 @@ contract VaultManager is IVaultManager {
     if (!sll.isLicensed(vault))          { revert VaultNotLicensed(); }
     vaults[id].push(vault);
     isDNftVault[id][vault] = true;
+    vaultIndex [id][vault] = vaults[id].length - 1;
     emit Added(id, vault);
   }
 
-  function remove(uint id, uint index) external {
+  function remove(uint id, address vault) external {
     if (dNft.ownerOf(id)  != msg.sender) { revert OnlyOwner(); }
-    uint vaultsLength = vaults[id].length;
-    if (index >= vaultsLength)           { revert IndexOutOfBounds(); }
+    if (!isDNftVault[id][vault])         { revert NotDNftVault(); }
+    uint index                = vaultIndex[id][vault];
+    uint vaultsLength         = vaults[id].length;
     address oldVault          = vaults[id][index];
-    isDNftVault[id][oldVault] = false;
     for (uint i = index; i < vaultsLength - 1; ) {
       vaults[i] = vaults[i+1];
       unchecked { i++; }
     }
     vaults[id].pop();
+    isDNftVault[id][oldVault] = false;
+    vaultIndex [id][oldVault] = 0; 
     emit Removed(id, oldVault);
   }
 }
