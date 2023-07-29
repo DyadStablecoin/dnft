@@ -29,8 +29,8 @@ contract VaultManager is IVaultManager {
   function replace(uint id, address vault, uint index) external {
     if (dNft.ownerOf(id) != msg.sender) { revert OnlyOwner(); }
     address oldVault          = vaults[id][index];
-    isDNftVault[id][vault]    = true;
     isDNftVault[id][oldVault] = false;
+    isDNftVault[id][vault]    = true;
     vaults     [id][index]    = vault;
   }
 
