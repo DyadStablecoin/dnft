@@ -49,6 +49,7 @@ contract Vault is IVault, ERC20 {
   }
 
   function withdraw() public {}
+  function mint() public {}
   function liquidate() public {}
   function redeem() public {}
 

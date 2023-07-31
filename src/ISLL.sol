@@ -22,7 +22,7 @@ interface ISLL {
    * @param id The id of the DNft to vote for.
    * @param vault The vault to vote for.
    */
-  function removeVote(uint id, address vault) external;
+  function unlicense(uint id, address vault) external;
 
   /**
    * @notice License a vault.
