@@ -81,14 +81,14 @@ contract SLLTest is Test {
   }
 
   ///////////////////////////
-  // removeLicense
-  function test_removeLicense() public {
+  // unlicense
+  function test_unlicense() public {
     uint id = vote();
     assertFalse(sll.isLicensed(RANDOM_VAULT));
     sll.license(RANDOM_VAULT);
     assertTrue(sll.isLicensed(RANDOM_VAULT));
     sll.removeVote(id, RANDOM_VAULT);
-    sll.removeLicense(RANDOM_VAULT);
+    sll.unlicense(RANDOM_VAULT);
     assertFalse(sll.isLicensed(RANDOM_VAULT));
   }
 

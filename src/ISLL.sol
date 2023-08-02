@@ -19,10 +19,9 @@ interface ISLL {
 
   /**
    * @notice Remove a vote for a vault to be licensed.
-   * @param id The id of the DNft to vote for.
    * @param vault The vault to vote for.
    */
-  function unlicense(uint id, address vault) external;
+  function removeVote(uint id, address vault) external;
 
   /**
    * @notice License a vault.
@@ -34,7 +33,7 @@ interface ISLL {
    * @notice Remove license from a vault.
    * @param vault The vault to license.
    */
-  function removeLicense(address vault) external;
+  function unlicense(address vault) external;
 
   function mint(address to, uint amount) external;
 
