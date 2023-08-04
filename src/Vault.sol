@@ -28,13 +28,57 @@ contract Vault is IVault, ERC4626 {
       oracle = _oracle;
   }
 
-  function transfer(address to, uint256 amount) public override returns (bool) {
-    super.transfer(to, amount);
-    return true;
+  function approve(
+    address spender,
+    uint256 amount
+  ) 
+    public 
+    override 
+    returns (bool) {
+      revert NotSupported();
   }
 
-  function totalAssets() public view override returns (uint) {
-    return asset.balanceOf(address(this));
+  function transfer(
+    address to,
+    uint256 amount
+  ) 
+    public 
+    override 
+    returns (bool) {
+      revert NotSupported();
+  }
+
+  function transferFrom(
+    address from,
+    address to,
+    uint256 amount
+  ) 
+    public 
+    override 
+    returns (bool) {
+      revert NotSupported();
+  }
+
+  function permit(
+    address owner,
+    address spender,
+    uint256 value,
+    uint256 deadline,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
+  ) 
+    public 
+    override {
+      revert NotSupported();
+  }
+
+  function totalAssets() 
+    public 
+    view 
+    override 
+    returns (uint) {
+      return asset.balanceOf(address(this));
   }
 
   // collateral price in USD
