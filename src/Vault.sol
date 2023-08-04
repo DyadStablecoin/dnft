@@ -79,6 +79,23 @@ contract Vault is IVault, ERC4626 {
       asset.safeTransfer(receiver, assets);
   }
 
+  function redeem(
+    uint    id, 
+    uint    shares,
+    address receiver
+  ) 
+    public 
+    virtual 
+    returns (uint assets) {
+      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+      require((assets = previewRedeem(shares)) != 0, "ZERO_ASSETS");
+      beforeWithdraw(assets, shares);
+      address owner = address(uint160(id));
+      _burn(owner, shares);
+      emit Withdraw(msg.sender, receiver, owner, assets, shares);
+      asset.safeTransfer(receiver, assets);
+  }
+
   /*//////////////////////////////////////////////////////////////
                   ERC4626 IS NOT DIRECTLY CALLABLE
   //////////////////////////////////////////////////////////////*/
