@@ -10,9 +10,11 @@ import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 import {SafeTransferLib} from "@solmate/src/utils/SafeTransferLib.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import {SafeTransferLib} from "@solmate/src/utils/SafeTransferLib.sol";
 
 contract Vault is IVault, ERC4626 {
-  using SafeCast for int;
+  using SafeCast        for int;
+  using SafeTransferLib for ERC20;
 
   DNft          public immutable dNft;
   IAggregatorV3 public immutable oracle;
@@ -28,12 +30,40 @@ contract Vault is IVault, ERC4626 {
       oracle = _oracle;
   }
 
+  function deposit(
+    uint id, 
+    uint assets
+  ) 
+    public 
+    returns (uint shares) {
+      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+      require((shares = previewDeposit(assets)) != 0, "ZERO_SHARES");
+      asset.safeTransferFrom(msg.sender, address(this), assets);
+      address receiver = address(uint160(id));
+      _mint(receiver, shares);
+      emit Deposit(msg.sender, receiver, assets, shares);
+      return shares;
+  }
+
+  /*//////////////////////////////////////////////////////////////
+                  ERC4626 IS NOT DIRECTLY CALLABLE
+  //////////////////////////////////////////////////////////////*/
+  function deposit(
+    uint    assets,
+    address receiver
+  ) 
+    public 
+    override 
+    returns (uint shares) {
+      revert NotSupported();
+  }
+
   /*//////////////////////////////////////////////////////////////
                       ERC20 IS NOT TRANSFERABLE
   //////////////////////////////////////////////////////////////*/
   function approve(
     address spender,
-    uint256 amount
+    uint amount
   ) 
     public 
     override 
@@ -43,7 +73,7 @@ contract Vault is IVault, ERC4626 {
 
   function transfer(
     address to,
-    uint256 amount
+    uint amount
   ) 
     public 
     override 
@@ -54,7 +84,7 @@ contract Vault is IVault, ERC4626 {
   function transferFrom(
     address from,
     address to,
-    uint256 amount
+    uint amount
   ) 
     public 
     override 
@@ -65,8 +95,8 @@ contract Vault is IVault, ERC4626 {
   function permit(
     address owner,
     address spender,
-    uint256 value,
-    uint256 deadline,
+    uint value,
+    uint deadline,
     uint8 v,
     bytes32 r,
     bytes32 s
@@ -91,9 +121,9 @@ contract Vault is IVault, ERC4626 {
     returns (uint) {
       (
         uint80 roundID,
-        int256 price,
+        int price,
         , 
-        uint256 timeStamp, 
+        uint timeStamp, 
         uint80 answeredInRound
       ) = oracle.latestRoundData();
       if (timeStamp == 0)            revert IncompleteRound();
