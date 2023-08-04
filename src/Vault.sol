@@ -30,6 +30,9 @@ contract Vault is IVault, ERC4626 {
       oracle = _oracle;
   }
 
+  /*//////////////////////////////////////////////////////////////
+                        "ERC4626" FUNCTIONS
+  //////////////////////////////////////////////////////////////*/
   function deposit(
     uint id, 
     uint assets
@@ -42,7 +45,21 @@ contract Vault is IVault, ERC4626 {
       address receiver = address(uint160(id));
       _mint(receiver, shares);
       emit Deposit(msg.sender, receiver, assets, shares);
-      return shares;
+  }
+
+  function mint(
+    uint id, 
+    uint shares
+  ) 
+    public 
+    returns (uint assets) {
+      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+      assets = previewMint(shares); 
+      asset.safeTransferFrom(msg.sender, address(this), assets);
+      address receiver = address(uint160(id));
+      _mint(receiver, shares);
+      emit Deposit(msg.sender, receiver, assets, shares);
+      return assets;
   }
 
   /*//////////////////////////////////////////////////////////////
