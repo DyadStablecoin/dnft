@@ -28,6 +28,9 @@ contract Vault is IVault, ERC4626 {
       oracle = _oracle;
   }
 
+  /*//////////////////////////////////////////////////////////////
+                      ERC20 IS NOT TRANSFERABLE
+  //////////////////////////////////////////////////////////////*/
   function approve(
     address spender,
     uint256 amount
@@ -35,7 +38,7 @@ contract Vault is IVault, ERC4626 {
     public 
     override 
     returns (bool) {
-      revert NotSupported();
+      revert NotTransferable();
   }
 
   function transfer(
@@ -45,7 +48,7 @@ contract Vault is IVault, ERC4626 {
     public 
     override 
     returns (bool) {
-      revert NotSupported();
+      revert NotTransferable();
   }
 
   function transferFrom(
@@ -56,7 +59,7 @@ contract Vault is IVault, ERC4626 {
     public 
     override 
     returns (bool) {
-      revert NotSupported();
+      revert NotTransferable();
   }
 
   function permit(
@@ -70,7 +73,7 @@ contract Vault is IVault, ERC4626 {
   ) 
     public 
     override {
-      revert NotSupported();
+      revert NotTransferable();
   }
 
   function totalAssets() 
