@@ -11,6 +11,9 @@ contract Staking is IStaking, Owned {
   DNft  public immutable dNft;
   Vault public vault;
 
+  mapping(uint => uint) public rewards;
+  mapping(uint => uint) public balanceOf;
+
   constructor(DNft _dNft) Owned(msg.sender) {
     dNft = _dNft;
   }
@@ -26,13 +29,33 @@ contract Staking is IStaking, Owned {
       uint id, 
       uint amount
   ) external {
-      // TODO
+      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+      vault.transferFrom(msg.sender, address(this), amount);
+      balanceOf[id] += amount;
   }
 
   function unstake(
       uint id, 
       uint amount
   ) external {
-      // TODO
+      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+      balanceOf[id] -= amount;
+      vault.transfer(msg.sender, amount);
+  }
+
+  function getReward(
+    uint id
+  ) external {
+      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+      vault.mint(msg.sender, rewards[id]);
+  }
+
+  function _reward(
+      uint amount, 
+      uint duration
+  ) internal
+    pure
+    returns (uint) {
+      return amount * duration;
   }
 }
