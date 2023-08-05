@@ -57,14 +57,14 @@ contract Staking is IStaking, Owned {
   function _updateReward(
       uint id
   ) internal {
-      uint reward = _reward(
+      uint reward = _calcReward(
           balanceOf[id], 
           block.timestamp - lastUpdated[id]
       );
       rewards[id] += reward;
   }
 
-  function _reward(
+  function _calcReward(
       uint amount, 
       uint duration
   ) internal
