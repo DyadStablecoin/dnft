@@ -16,12 +16,17 @@ import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import {SafeTransferLib} from "@solmate/src/utils/SafeTransferLib.sol";
 
 contract Vault is IVault, Owned, ERC4626 {
-  using SafeCast        for int;
-  using SafeTransferLib for ERC20;
+  using SafeCast          for int;
+  using SafeTransferLib   for ERC20;
+  using FixedPointMathLib for uint;
+
+  uint public constant MIN_COLLATERIZATION_RATIO = 15e17; // 150%
 
   DNft          public immutable dNft;
   VaultManager  public immutable vaultManager;
   IAggregatorV3 public immutable oracle;
+
+  mapping (uint => uint) public mintedDyad;
 
   constructor(
       DNft          _dNft,
@@ -45,9 +50,14 @@ contract Vault is IVault, Owned, ERC4626 {
   function liquidate(
       uint id
   ) external {
+      uint totalUsdValue;
       for (uint i = 0; i < vaultManager.getNumberOfVaults(id); i++) {
-        address vault = vaultManager.vaults(id, i);
-        uint usdVaule = balanceOf[address(uint160(id))] * _collatPrice();
+        address vault    = vaultManager.vaults(id, i);
+        uint    usdVaule = balanceOf[address(uint160(id))] * _collatPrice();
+        totalUsdValue += usdVaule;
+      }
+      if (_collatRatio(id, totalUsdValue) < MIN_COLLATERIZATION_RATIO) {
+        // TODO: liquidate
       }
   }
 
@@ -58,6 +68,19 @@ contract Vault is IVault, Owned, ERC4626 {
     external
     onlyOwner {
       super._mint(to, amount);
+  }
+
+  function _collatRatio(
+    uint id,
+    uint collat
+  ) 
+    private 
+    view 
+    returns (uint) {
+      uint _dyad = mintedDyad[id]; // save gas
+      if (_dyad == 0) return type(uint).max;
+      uint _collat = collat / (10**oracle.decimals());
+      return _collat.divWadDown(_dyad);
   }
 
   // collateral price in USD
