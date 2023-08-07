@@ -6,9 +6,18 @@ import {Vault} from "./Vault.sol";
 import {IStaking} from "./interfaces/IStaking.sol";
 
 import {Owned} from "@solmate/src/auth/Owned.sol";
+import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 
 contract Staking is IStaking, Owned {
+  using FixedPointMathLib for uint;
+
+  uint constant public REWARD_RATE = 8e15;   // 0.8% 
+  uint constant public TIME_BONUS  = 135e12; // 0.135%
+
+  uint public constant MIN_COLLATERIZATION_RATIO = 3e18; // 300%
+
   DNft  public immutable dNft;
+
   Vault public vault;
 
   mapping(uint => uint) public rewards;
@@ -58,6 +67,7 @@ contract Staking is IStaking, Owned {
       uint id
   ) internal {
       uint reward = _calcReward(
+          id, 
           balanceOf[id], 
           block.timestamp - lastUpdated[id]
       );
@@ -65,11 +75,19 @@ contract Staking is IStaking, Owned {
   }
 
   function _calcReward(
+      uint id,
       uint amount, 
       uint duration
   ) internal
-    pure
+    view
     returns (uint) {
-      return amount * duration;
+      uint shares      = vault.balanceOf(address(uint160(id)));
+      uint sharesTotal = vault.totalSupply();
+      // =1/(1+(B5/B6))
+      uint equityControl = uint(1).divWadDown(1+shares.divWadDown(sharesTotal)); 
+      // B4*(B3^(1+B2))*B1*B8
+      return duration.rpow(1+TIME_BONUS, amount)
+        .mulWadDown(REWARD_RATE)
+        .mulWadDown(equityControl);
   }
 }
