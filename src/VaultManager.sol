@@ -2,8 +2,15 @@
 pragma solidity =0.8.17;
 
 import {IVaultManager} from "./IVaultManager.sol";
+// import {IVault} from "./interfaces/IVault.sol";
 import {DNft} from "./DNft.sol";
 import {SLL} from "./SLL.sol";
+import {ERC20} from "@solmate/src/tokens/ERC20.sol";
+
+interface IVault {
+  function asset() external view returns (ERC20);
+  function collatPrice() external view returns (uint);
+}
 
 contract VaultManager is IVaultManager {
   DNft public immutable dNft;
@@ -52,12 +59,23 @@ contract VaultManager is IVaultManager {
       emit Removed(id, oldVault);
   }
 
-  function getNumberOfVaults(
+  function _collatRatio(
       uint id
   ) 
-    external 
+    internal 
     view 
     returns (uint) {
-      return vaults[id].length;
+      uint totalUsdValue;
+      uint numberOfVaults = vaults[id].length;
+      for (uint i = 0; i < numberOfVaults; i++) {
+        IVault vault     = IVault(vaults[id][i]);
+        uint    usdVaule = vault.asset().balanceOf(address(uint160(id))) * vault.collatPrice();
+        totalUsdValue += usdVaule;
+      }
+      uint _dyad = sll.mintedDyad(address(uint160(id))); // save gas
+      if (_dyad == 0) return type(uint).max;
+      // uint _collat = collat / (10**oracle.decimals());
+      // return _collat.divWadDown(_dyad);
+      return 0;
   }
 }

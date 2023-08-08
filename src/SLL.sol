@@ -20,6 +20,7 @@ contract SLL is ISLL {
   mapping (address => uint) public votes;      // vault   => votes
   mapping (uint    => bool) public hasVoted;   // dNft id => voted
   mapping (address => bool) public isLicensed; // vault   => is licensed
+  mapping (address => uint) public mintedDyad;
 
   constructor(
     DNft _dNft,
@@ -65,11 +66,13 @@ contract SLL is ISLL {
   function mint(address to, uint amount) external {
     if (!isLicensed[msg.sender]) revert NotLicensedToMint();
     dyad.mint(to, amount);
+    mintedDyad[to] += amount;
   }
 
   /// @inheritdoc ISLL
   function burn(address from, uint amount) external {
     if (!isLicensed[msg.sender]) revert NotLicensedToBurn();
     dyad.burn(from, amount);
+    mintedDyad[from] -= amount;
   }
 }

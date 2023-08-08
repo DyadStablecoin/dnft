@@ -47,19 +47,19 @@ contract Vault is IVault, Owned, ERC4626 {
   /*//////////////////////////////////////////////////////////////
                         CUSTOM VAULT METHODS
   //////////////////////////////////////////////////////////////*/
-  function liquidate(
-      uint id
-  ) external {
-      uint totalUsdValue;
-      for (uint i = 0; i < vaultManager.getNumberOfVaults(id); i++) {
-        address vault    = vaultManager.vaults(id, i);
-        uint    usdVaule = balanceOf[address(uint160(id))] * _collatPrice();
-        totalUsdValue += usdVaule;
-      }
-      if (_collatRatio(id, totalUsdValue) < MIN_COLLATERIZATION_RATIO) {
-        // TODO: liquidate
-      }
-  }
+  // function liquidate(
+  //     uint id
+  // ) external {
+  //     uint totalUsdValue;
+  //     for (uint i = 0; i < vaultManager.getNumberOfVaults(id); i++) {
+  //       address vault    = vaultManager.vaults(id, i);
+  //       uint    usdVaule = balanceOf[address(uint160(id))] * collatPrice();
+  //       totalUsdValue += usdVaule;
+  //     }
+  //     if (_collatRatio(id, totalUsdValue) < MIN_COLLATERIZATION_RATIO) {
+  //       // TODO: liquidate
+  //     }
+  // }
 
   function mint(
     address to,
@@ -70,23 +70,24 @@ contract Vault is IVault, Owned, ERC4626 {
       super._mint(to, amount);
   }
 
-  function _collatRatio(
-    uint id,
-    uint collat
-  ) 
-    private 
-    view 
-    returns (uint) {
-      uint _dyad = mintedDyad[id]; // save gas
-      if (_dyad == 0) return type(uint).max;
-      uint _collat = collat / (10**oracle.decimals());
-      return _collat.divWadDown(_dyad);
-  }
+  // function _collatRatio(
+  //   uint id,
+  //   uint collat
+  // ) 
+  //   private 
+  //   view 
+  //   returns (uint) {
+  //     uint _dyad = mintedDyad[id]; // save gas
+  //     if (_dyad == 0) return type(uint).max;
+  //     uint _collat = collat / (10**oracle.decimals());
+  //     return _collat.divWadDown(_dyad);
+  // }
 
   // collateral price in USD
-  function _collatPrice() 
-    private 
+  function collatPrice() 
+    public 
     view 
+    override
     returns (uint) {
       (
         uint80 roundID,
