@@ -60,22 +60,6 @@ contract Vault is IVault, Owned, ERC4626 {
       }
   }
 
-  function mintDyad(
-      uint id, 
-      uint amount 
-  ) external {
-      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-      mintedDyad[id] += amount;
-  }
-
-  function redeemDyad(
-      uint id, 
-      uint amount 
-  ) external {
-      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-      mintedDyad[id] -= amount;
-  }
-
   function mint(
     address to,
     uint    amount
@@ -100,6 +84,25 @@ contract Vault is IVault, Owned, ERC4626 {
       if (timeStamp == 0)            revert IncompleteRound();
       if (answeredInRound < roundID) revert StaleData();
       return price.toUint256();
+  }
+
+  /*//////////////////////////////////////////////////////////////
+                          DYAD FUNCTIONS
+  //////////////////////////////////////////////////////////////*/
+  function mintDyad(
+      uint id, 
+      uint amount 
+  ) external {
+      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+      mintedDyad[id] += amount;
+  }
+
+  function redeemDyad(
+      uint id, 
+      uint amount 
+  ) external {
+      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+      mintedDyad[id] -= amount;
   }
 
   /*//////////////////////////////////////////////////////////////
