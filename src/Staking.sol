@@ -14,8 +14,6 @@ contract Staking is IStaking, Owned {
   uint constant public REWARD_RATE = 8e15;   // 0.8% 
   uint constant public TIME_BONUS  = 135e12; // 0.135%
 
-  uint public constant MIN_COLLATERIZATION_RATIO = 3e18; // 300%
-
   DNft  public immutable dNft;
 
   Vault public vault;
