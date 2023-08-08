@@ -47,19 +47,13 @@ contract Vault is IVault, Owned, ERC4626 {
   /*//////////////////////////////////////////////////////////////
                         CUSTOM VAULT METHODS
   //////////////////////////////////////////////////////////////*/
-  // function liquidate(
-  //     uint id
-  // ) external {
-  //     uint totalUsdValue;
-  //     for (uint i = 0; i < vaultManager.getNumberOfVaults(id); i++) {
-  //       address vault    = vaultManager.vaults(id, i);
-  //       uint    usdVaule = balanceOf[address(uint160(id))] * collatPrice();
-  //       totalUsdValue += usdVaule;
-  //     }
-  //     if (_collatRatio(id, totalUsdValue) < MIN_COLLATERIZATION_RATIO) {
-  //       // TODO: liquidate
-  //     }
-  // }
+  function liquidate(
+      uint id
+  ) external {
+      if (vaultManager.collatRatio(id) < MIN_COLLATERIZATION_RATIO) {
+        // TODO: liquidate
+      }
+  }
 
   function mint(
     address to,
