@@ -10,6 +10,5 @@ interface IVault {
   error StaleData      ();
   error IncompleteRound();
 
-  // function asset() external view returns (ERC20);
   function collatPrice() external view returns (uint);
 }
