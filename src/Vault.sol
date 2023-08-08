@@ -48,10 +48,15 @@ contract Vault is IVault, Owned, ERC4626 {
                         CUSTOM VAULT METHODS
   //////////////////////////////////////////////////////////////*/
   function liquidate(
-      uint id
+      uint id,
+      uint receiver
   ) external {
       if (vaultManager.collatRatio(id) < MIN_COLLATERIZATION_RATIO) {
-        // TODO: liquidate
+        _transfer(
+          id,
+          receiver,
+          balanceOf[address(uint160(id))]
+        );
       }
   }
 
@@ -63,19 +68,6 @@ contract Vault is IVault, Owned, ERC4626 {
     onlyOwner {
       super._mint(to, amount);
   }
-
-  // function _collatRatio(
-  //   uint id,
-  //   uint collat
-  // ) 
-  //   private 
-  //   view 
-  //   returns (uint) {
-  //     uint _dyad = mintedDyad[id]; // save gas
-  //     if (_dyad == 0) return type(uint).max;
-  //     uint _collat = collat / (10**oracle.decimals());
-  //     return _collat.divWadDown(_dyad);
-  // }
 
   // collateral price in USD
   function collatPrice() 
@@ -179,7 +171,7 @@ contract Vault is IVault, Owned, ERC4626 {
   //////////////////////////////////////////////////////////////*/
   function approve(
     address spender,
-    uint amount
+    uint    amount
   ) 
     public 
     override 
@@ -189,7 +181,7 @@ contract Vault is IVault, Owned, ERC4626 {
 
   function transfer(
     address to,
-    uint amount
+    uint    amount
   ) 
     public 
     override 
@@ -197,10 +189,24 @@ contract Vault is IVault, Owned, ERC4626 {
       revert NotTransferable();
   }
 
+  function _transfer(
+    uint from,
+    uint to,
+    uint amount
+  ) 
+    internal 
+    returns (bool) {
+      super.transferFrom(
+        address(uint160(from)),
+        address(uint160(to)),
+        amount
+      );
+  }
+
   function transferFrom(
     address from,
     address to,
-    uint amount
+    uint    amount
   ) 
     public 
     override 
