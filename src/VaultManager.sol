@@ -32,7 +32,7 @@ contract VaultManager is IVaultManager {
   }
 
   function add(
-      uint id,
+      uint    id,
       address vault
   ) external {
       if (dNft.ownerOf(id)  != msg.sender) revert OnlyOwner(); 
@@ -45,7 +45,7 @@ contract VaultManager is IVaultManager {
   }
 
   function remove(
-      uint id,
+      uint    id,
       address vault
   ) external {
       if (dNft.ownerOf(id)  != msg.sender) revert OnlyOwner();
