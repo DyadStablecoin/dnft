@@ -2,6 +2,7 @@
 pragma solidity =0.8.17;
 
 import {DNft} from "./DNft.sol";
+import {Dyad} from "./DYAD.sol";
 import {Staking} from "./Staking.sol";
 import {VaultManager} from "./VaultManager.sol";
 import {IVault} from "./interfaces/IVault.sol";
@@ -23,13 +24,13 @@ contract Vault is IVault, Owned, ERC4626 {
   uint public constant MIN_COLLATERIZATION_RATIO = 15e17; // 150%
 
   DNft          public immutable dNft;
+  Dyad          public immutable dyad;
   VaultManager  public immutable vaultManager;
   IAggregatorV3 public immutable oracle;
 
-  mapping (uint => uint) public mintedDyad;
-
   constructor(
       DNft          _dNft,
+      Dyad          _dyad,
       VaultManager  _vaultManager,
       IAggregatorV3 _oracle,
       Staking       _staking, 
@@ -40,6 +41,7 @@ contract Vault is IVault, Owned, ERC4626 {
     Owned(address(_staking))
   {
       dNft         = _dNft;
+      dyad         = _dyad;
       vaultManager = _vaultManager;
       oracle       = _oracle;
   }
@@ -90,11 +92,13 @@ contract Vault is IVault, Owned, ERC4626 {
                           DYAD FUNCTIONS
   //////////////////////////////////////////////////////////////*/
   function mintDyad(
-      uint id, 
-      uint amount 
+      uint    id, 
+      uint    amount, 
+      address to
   ) external {
       if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-      mintedDyad[id] += amount;
+      // if (_collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
+      dyad.mint(to, amount);
   }
 
   function redeemDyad(
@@ -102,7 +106,6 @@ contract Vault is IVault, Owned, ERC4626 {
       uint amount 
   ) external {
       if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-      mintedDyad[id] -= amount;
   }
 
   /*//////////////////////////////////////////////////////////////
