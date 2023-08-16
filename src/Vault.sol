@@ -3,6 +3,7 @@ pragma solidity =0.8.17;
 
 import {DNft} from "./DNft.sol";
 import {Dyad} from "./DYAD.sol";
+import {SLL} from "./SLL.sol";
 import {Staking} from "./Staking.sol";
 import {VaultManager} from "./VaultManager.sol";
 import {IVault} from "./interfaces/IVault.sol";
@@ -25,12 +26,14 @@ contract Vault is IVault, Owned, ERC4626 {
 
   DNft          public immutable dNft;
   Dyad          public immutable dyad;
+  SLL           public immutable sll;
   VaultManager  public immutable vaultManager;
   IAggregatorV3 public immutable oracle;
 
   constructor(
       DNft          _dNft,
       Dyad          _dyad,
+      SLL           _sll, 
       VaultManager  _vaultManager,
       IAggregatorV3 _oracle,
       Staking       _staking, 
@@ -42,6 +45,7 @@ contract Vault is IVault, Owned, ERC4626 {
   {
       dNft         = _dNft;
       dyad         = _dyad;
+      sll          = _sll;
       vaultManager = _vaultManager;
       oracle       = _oracle;
   }
@@ -102,15 +106,18 @@ contract Vault is IVault, Owned, ERC4626 {
       sll.mint(to, amount);
   }
 
-  // redeem against your shares
+  // redeem DYAD for your shares
   function redeemDyad(
-      uint id, 
-      uint amount 
+      uint    id, 
+      uint    shares,  
+      address to 
   ) external {
       if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-      sll.burn(msg.sender, amount);
-      uint _collat = amount * (10**oracle.decimals()) / _collatPrice();
-      withdraw(from, to, _collat);
+      address owner = address(uint160(id));
+      uint amount = convertToAssets(shares);
+      uint collat = amount * (10**oracle.decimals()) / collatPrice();
+      _burn(owner, shares);
+      transferFrom(address(this), to, collat);
   }
 
   /*//////////////////////////////////////////////////////////////
