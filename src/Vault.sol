@@ -91,21 +91,26 @@ contract Vault is IVault, Owned, ERC4626 {
   /*//////////////////////////////////////////////////////////////
                           DYAD FUNCTIONS
   //////////////////////////////////////////////////////////////*/
+  // mint against collateral
   function mintDyad(
       uint    id, 
       uint    amount, 
       address to
   ) external {
       if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-      // if (_collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
-      dyad.mint(to, amount);
+      if (vaultManager.collatRatio(id) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
+      sll.mint(to, amount);
   }
 
+  // redeem against your shares
   function redeemDyad(
       uint id, 
       uint amount 
   ) external {
       if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+      sll.burn(msg.sender, amount);
+      uint _collat = amount * (10**oracle.decimals()) / _collatPrice();
+      withdraw(from, to, _collat);
   }
 
   /*//////////////////////////////////////////////////////////////

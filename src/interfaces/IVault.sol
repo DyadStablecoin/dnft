@@ -9,6 +9,7 @@ interface IVault {
   error NotTransferable();
   error StaleData      ();
   error IncompleteRound();
+  error CrTooLow();
 
   function collatPrice() external view returns (uint);
 }
