@@ -21,6 +21,7 @@ contract VaultManager is IVaultManager {
   SLL  public immutable sll;
 
   uint public constant MAX_VAULTS = 5;
+  uint public constant MIN_COLLATERIZATION_RATIO = 15e17; // 150%
 
   mapping (uint => address[])                 public vaults; 
   mapping (uint => mapping (address => uint)) public vaultsIndex;
@@ -78,5 +79,12 @@ contract VaultManager is IVaultManager {
       uint _dyad = sll.mintedDyad(address(uint160(id))); // save gas
       if (_dyad == 0) return type(uint).max;
       return totalUsdValue.divWadDown(_dyad);
+  }
+
+  function liquidate(
+      uint from, 
+      uint to 
+  ) external {
+      if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CR_NotLowEnough();
   }
 }

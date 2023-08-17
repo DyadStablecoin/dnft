@@ -7,6 +7,7 @@ interface IVaultManager {
   error TooManyVaults();
   error IndexOutOfBounds();
   error NotDNftVault();
+  error CR_NotLowEnough();
 
   event Added  (uint indexed id, address indexed vault);
   event Removed(uint indexed id, address indexed vault);
