@@ -4,6 +4,7 @@ pragma solidity =0.8.17;
 import {IVaultManager} from "./IVaultManager.sol";
 import {DNft} from "./DNft.sol";
 import {SLL} from "./SLL.sol";
+import {Dyad} from "./DYAD.sol";
 
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
@@ -19,6 +20,7 @@ contract VaultManager is IVaultManager {
 
   DNft public immutable dNft;
   SLL  public immutable sll;
+  Dyad public immutable dyad;
 
   uint public constant MAX_VAULTS = 5;
   uint public constant MIN_COLLATERIZATION_RATIO = 15e17; // 150%
@@ -27,9 +29,14 @@ contract VaultManager is IVaultManager {
   mapping (uint => mapping (address => uint)) public vaultsIndex;
   mapping (uint => mapping (address => bool)) public isDNftVault;
 
-  constructor(DNft _dNft, SLL _sll) {
+  constructor(
+    DNft _dNft,
+    SLL  _sll,
+    Dyad _dyad
+  ) {
     dNft = _dNft;
-    sll = _sll;
+    sll  = _sll;
+    dyad = _dyad;
   }
 
   function add(
@@ -86,5 +93,11 @@ contract VaultManager is IVaultManager {
       uint to 
   ) external {
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CR_NotLowEnough();
+      uint mintedDyad = sll.mintedDyad(address(uint160(from)));
+      sll.burn(msg.sender, mintedDyad);
+      sll.setMintedDyad(address(uint160(from)), 0);
+      
+      uint sharesBonus = 0;
+      // TODO: loop over all vaults to get their shares
   }
 }

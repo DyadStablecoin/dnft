@@ -20,6 +20,7 @@ contract SLL is ISLL {
   mapping (address => uint) public votes;      // vault   => votes
   mapping (uint    => bool) public hasVoted;   // dNft id => voted
   mapping (address => bool) public isLicensed; // vault   => is licensed
+  // TODO: can be uint
   mapping (address => uint) public mintedDyad;
 
   constructor(
@@ -77,8 +78,16 @@ contract SLL is ISLL {
 
   /// @inheritdoc ISLL
   function burn(address from, uint amount) external {
-    if (!isLicensed[msg.sender]) revert NotLicensedToBurn();
+    // if (!isLicensed[msg.sender]) revert NotLicensedToBurn();
     dyad.burn(from, amount);
-    mintedDyad[from] -= amount;
+    // mintedDyad[from] -= amount;
+  }
+
+  // TODO: only the vault manager
+  function setMintedDyad(
+      address from,
+      uint    amount
+  ) external {
+      mintedDyad[from] = amount;
   }
 }
