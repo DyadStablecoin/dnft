@@ -222,12 +222,13 @@ contract Vault is IVault, Owned, ERC4626 {
       revert NotTransferable();
   }
 
+  // only vault manager
   function _transfer(
     uint from,
     uint to,
     uint amount
   ) 
-    internal 
+    public 
     returns (bool) {
       super.transferFrom(
         address(uint160(from)),
