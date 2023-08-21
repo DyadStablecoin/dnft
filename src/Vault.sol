@@ -66,6 +66,7 @@ contract Vault is IVault, Owned, ERC4626 {
       }
   }
 
+  // TODO: only vault manager
   function mint(
     address to,
     uint    amount
