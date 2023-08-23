@@ -80,7 +80,7 @@ contract VaultManager is IVaultManager {
     view 
     returns (uint) {
       uint totalUsdValue = getVaultsUsdValue(id);
-      uint _dyad = sll.mintedDyad(address(uint160(id))); // save gas
+      uint _dyad = sll.mintedDyad(id); // save gas
       if (_dyad == 0) return type(uint).max;
       return totalUsdValue.divWadDown(_dyad);
   }
@@ -105,13 +105,12 @@ contract VaultManager is IVaultManager {
       uint to 
   ) external {
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CR_NotLowEnough();
-      uint mintedDyad = sll.mintedDyad(address(uint160(from)));
-      sll.burn(msg.sender, mintedDyad);
-      sll.setMintedDyad(address(uint160(from)), 0);
+      uint mintedDyad = sll.mintedDyad(from);
+      sll.burn(from, msg.sender, mintedDyad);
+      sll.setMintedDyad(from, 0);
       uint totalUsdValue = getVaultsUsdValue(from);
       uint sharesBonus   = mintedDyad.divWadDown(totalUsdValue) - uint(2).divWadDown(3);
       uint numberOfVaults = vaults[from].length;
-      // TODO: get shares bonus
       for (uint i = 0; i < numberOfVaults; i++) {
         IVault vault = IVault(vaults[from][i]);
         uint shares = vault.balanceOf(from);

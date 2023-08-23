@@ -98,23 +98,23 @@ contract Vault is IVault, Owned, ERC4626 {
   //////////////////////////////////////////////////////////////*/
   // mint against collateral
   function mintDyad(
-      uint    id, 
-      uint    amount, 
-      address to
+      uint    from, 
+      address to,
+      uint    amount 
   ) external {
-      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-      if (vaultManager.collatRatio(id) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
-      sll.mint(to, amount);
+      if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
+      if (vaultManager.collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
+      sll.mint(from, to, amount);
   }
 
   // redeem DYAD for your shares
   function redeemDyad(
-      uint    id, 
-      uint    shares,  
-      address to 
+      uint    from, 
+      address to, 
+      uint    shares
   ) external {
-      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-      address owner = address(uint160(id));
+      if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
+      address owner = address(uint160(from));
       uint amount = convertToAssets(shares);
       uint collat = amount * (10**oracle.decimals()) / collatPrice();
       _burn(owner, shares);

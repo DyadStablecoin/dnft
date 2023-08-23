@@ -20,8 +20,7 @@ contract SLL is ISLL {
   mapping (address => uint) public votes;      // vault   => votes
   mapping (uint    => bool) public hasVoted;   // dNft id => voted
   mapping (address => bool) public isLicensed; // vault   => is licensed
-  // TODO: can be uint
-  mapping (address => uint) public mintedDyad;
+  mapping (uint    => uint) public mintedDyad; // dNft id => minted dyad
 
   constructor(
     DNft _dNft,
@@ -31,7 +30,6 @@ contract SLL is ISLL {
     dyad = _dyad;
   }
 
-  /// @inheritdoc ISLL
   function vote(
       uint    id,
       address vault
@@ -42,7 +40,6 @@ contract SLL is ISLL {
       votes[vault] += 1;
   }
 
-  /// @inheritdoc ISLL
   function removeVote(
       uint    id,
       address vault
@@ -53,7 +50,6 @@ contract SLL is ISLL {
       votes[vault] -= 1;
   }
 
-  /// @inheritdoc ISLL
   function license(address vault) external {
     if (votes[vault].divWadDown(dNft.totalSupply()) <= LICENSE_THRESHOLD) {
       revert NotEnoughVotes();
@@ -61,7 +57,6 @@ contract SLL is ISLL {
     isLicensed[vault] = true;
   }
 
-  /// @inheritdoc ISLL
   function unlicense(address vault) external {
     if (votes[vault].divWadDown(dNft.totalSupply()) > UNLICENSE_THRESHOLD) {
       revert TooManyVotes();
@@ -69,24 +64,30 @@ contract SLL is ISLL {
     isLicensed[vault] = false;
   }
 
-  /// @inheritdoc ISLL
-  function mint(address to, uint amount) external {
-    if (!isLicensed[msg.sender]) revert NotLicensedToMint();
-    dyad.mint(to, amount);
-    mintedDyad[to] += amount;
+  function mint(
+      uint    from,
+      address to,
+      uint    amount
+  ) external {
+      if (!isLicensed[msg.sender]) revert NotLicensedToMint();
+      mintedDyad[from] += amount;
+      dyad.mint(to, amount);
   }
 
-  /// @inheritdoc ISLL
-  function burn(address from, uint amount) external {
-    // if (!isLicensed[msg.sender]) revert NotLicensedToBurn();
-    dyad.burn(from, amount);
-    // mintedDyad[from] -= amount;
+  function burn(
+    uint    from,
+    address owner, 
+    uint    amount
+  ) external {
+    if (!isLicensed[msg.sender]) revert NotLicensedToBurn();
+    dyad.burn(owner, amount);
+    mintedDyad[from] -= amount;
   }
 
   // TODO: only the vault manager
   function setMintedDyad(
-      address from,
-      uint    amount
+      uint from,
+      uint amount
   ) external {
       mintedDyad[from] = amount;
   }
