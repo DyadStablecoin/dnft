@@ -9,6 +9,7 @@ interface ISLL {
   error TooManyVotes();
   error NotLicensedToMint();
   error NotLicensedToBurn();
+  error NotVaultManager();
 
   // /**
   //  * @notice Vote for a vault to be licensed.

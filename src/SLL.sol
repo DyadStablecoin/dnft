@@ -4,6 +4,7 @@ pragma solidity =0.8.17;
 import {ISLL} from "./ISLL.sol";
 import {DNft} from "./DNft.sol";
 import {Dyad} from "./Dyad.sol";
+import {VaultManager} from "./VaultManager.sol";
 
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 
@@ -11,8 +12,9 @@ import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 contract SLL is ISLL {
   using FixedPointMathLib for uint; 
 
-  DNft public immutable dNft;
-  Dyad public immutable dyad;
+  VaultManager public immutable vaultManager;
+  DNft         public immutable dNft;
+  Dyad         public immutable dyad;
 
   uint public constant   LICENSE_THRESHOLD = 66_0000000000000000; // 66%
   uint public constant UNLICENSE_THRESHOLD = 50_0000000000000000; // 50%
@@ -23,11 +25,13 @@ contract SLL is ISLL {
   mapping (uint    => uint) public mintedDyad; // dNft id => minted dyad
 
   constructor(
-    DNft _dNft,
-    Dyad _dyad
+    VaultManager _vaultManager,
+    DNft         _dNft,
+    Dyad         _dyad
   ) { 
-    dNft = _dNft;
-    dyad = _dyad;
+    vaultManager = _vaultManager;
+    dNft         = _dNft;
+    dyad         = _dyad;
   }
 
   function vote(
@@ -75,20 +79,20 @@ contract SLL is ISLL {
   }
 
   function burn(
-    uint    from,
-    address owner, 
-    uint    amount
+      uint    from,
+      address owner, 
+      uint    amount
   ) external {
-    if (!isLicensed[msg.sender]) revert NotLicensedToBurn();
-    dyad.burn(owner, amount);
-    mintedDyad[from] -= amount;
+      if (!isLicensed[msg.sender]) revert NotLicensedToBurn();
+      dyad.burn(owner, amount);
+      mintedDyad[from] -= amount;
   }
 
-  // TODO: only the vault manager
   function setMintedDyad(
-      uint from,
+      uint id,
       uint amount
   ) external {
-      mintedDyad[from] = amount;
+      if (msg.sender != address(vaultManager)) revert NotVaultManager();
+      mintedDyad[id] = amount;
   }
 }
