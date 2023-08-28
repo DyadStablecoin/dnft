@@ -16,11 +16,11 @@ contract SLL is ISLL {
   DNft         public immutable dNft;
   Dyad         public immutable dyad;
 
-  uint public constant   LICENSE_THRESHOLD = 66_0000000000000000; // 66%
+  uint public constant LICENSE_THRESHOLD   = 66_0000000000000000; // 66%
   uint public constant UNLICENSE_THRESHOLD = 50_0000000000000000; // 50%
 
-  mapping (address => uint) public votes;      // vault   => votes
-  mapping (uint    => bool) public hasVoted;   // dNft id => voted
+  mapping (address => uint) public votes;                           // vault   => votes
+  mapping (uint    => mapping (address => bool)) public hasVoted;   // dNft id => voted
   mapping (address => bool) public isLicensed; // vault   => is licensed
   mapping (uint    => uint) public mintedDyad; // dNft id => minted dyad
 
@@ -39,8 +39,8 @@ contract SLL is ISLL {
       address vault
   ) external {
       if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner(); 
-      if (hasVoted[id])                   revert VotedBefore(); 
-      hasVoted[id]  = true;
+      if (hasVoted[id][vault])            revert VotedBefore(); 
+      hasVoted[id][vault]  = true;
       votes[vault] += 1;
   }
 
@@ -49,8 +49,8 @@ contract SLL is ISLL {
       address vault
   ) external {
       if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner();
-      if (!hasVoted[id])                  revert NotVotedBefore();
-      hasVoted[id]  = false;
+      if (!hasVoted[id][vault])           revert NotVotedBefore();
+      hasVoted[id][vault]  = false;
       votes[vault] -= 1;
   }
 
