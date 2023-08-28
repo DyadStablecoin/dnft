@@ -3,7 +3,7 @@ pragma solidity =0.8.17;
 
 import {ISLL} from "./ISLL.sol";
 import {DNft} from "./DNft.sol";
-import {Dyad} from "./Dyad.sol";
+import {Dyad} from "./DYAD.sol";
 import {VaultManager} from "./VaultManager.sol";
 
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
