@@ -92,23 +92,6 @@ contract Vault is IVault, AccessControl, ERC4626 {
   }
 
   /*//////////////////////////////////////////////////////////////
-                          DYAD FUNCTIONS
-  //////////////////////////////////////////////////////////////*/
-  // redeem DYAD for your shares
-  function redeemDyad(
-      uint    from, 
-      address to, 
-      uint    shares
-  ) external {
-      if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
-      address owner = address(uint160(from));
-      uint amount = convertToAssets(shares);
-      uint collat = amount * (10**oracle.decimals()) / collatPrice();
-      _burn(owner, shares);
-      transferFrom(address(this), to, collat);
-  }
-
-  /*//////////////////////////////////////////////////////////////
                         "ERC4626" FUNCTIONS
   //////////////////////////////////////////////////////////////*/
   function deposit(uint id, uint assets) public returns (uint) {

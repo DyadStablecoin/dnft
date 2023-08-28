@@ -15,6 +15,7 @@ interface IVault {
   function decimals()    external view returns (uint);
   function balanceOf(uint id) external view returns (uint);
   function mint(address to, uint amount) external returns (bool);
+  function withdraw(uint assets, address receiver, address owner) external returns (uint);
   function _transfer(uint from, uint to, uint amount) external returns (bool);
 }
 
@@ -80,7 +81,7 @@ contract VaultManager is IVaultManager {
     view 
     returns (uint) {
       uint totalUsdValue = getVaultsUsdValue(id);
-      uint _dyad = sll.mintedDyad(id); // save gas
+      uint _dyad = dyad.mintedDyad(id); // save gas
       if (_dyad == 0) return type(uint).max;
       return totalUsdValue.divWadDown(_dyad);
   }
@@ -107,7 +108,19 @@ contract VaultManager is IVaultManager {
   ) external {
       if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
-      sll.mint(from, to, amount);
+      dyad.mint(from, to, amount);
+  }
+
+  function redeemDyad(
+      IVault  vault,
+      uint    from, 
+      address to, 
+      uint    amount
+  ) external {
+      if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
+      dyad.burn(from, msg.sender, amount);
+      uint collat = amount * (10**vault.decimals()) / vault.collatPrice();
+      vault.withdraw(collat, to, address(uint160(from)));
   }
 
   function liquidate(
@@ -115,9 +128,9 @@ contract VaultManager is IVaultManager {
       uint to 
   ) external {
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CR_NotLowEnough();
-      uint mintedDyad = sll.mintedDyad(from);
-      sll.burn(from, msg.sender, mintedDyad);
-      sll.setMintedDyad(from, 0);
+      uint mintedDyad = dyad.mintedDyad(from);
+      dyad.burn(from, msg.sender, mintedDyad);
+      // sll.setMintedDyad(from, 0);
       uint totalUsdValue = getVaultsUsdValue(from);
       uint sharesBonus   = mintedDyad.divWadDown(totalUsdValue) - uint(2).divWadDown(3);
       uint numberOfVaults = vaults[from].length;

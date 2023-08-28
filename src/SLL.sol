@@ -67,32 +67,4 @@ contract SLL is ISLL {
     }
     isLicensed[vault] = false;
   }
-
-  function mint(
-      uint    from,
-      address to,
-      uint    amount
-  ) external {
-      if (!isLicensed[msg.sender]) revert NotLicensedToMint();
-      mintedDyad[from] += amount;
-      dyad.mint(to, amount);
-  }
-
-  function burn(
-      uint    from,
-      address owner, 
-      uint    amount
-  ) external {
-      if (!isLicensed[msg.sender]) revert NotLicensedToBurn();
-      dyad.burn(owner, amount);
-      mintedDyad[from] -= amount;
-  }
-
-  function setMintedDyad(
-      uint id,
-      uint amount
-  ) external {
-      if (msg.sender != address(vaultManager)) revert NotVaultManager();
-      mintedDyad[id] = amount;
-  }
 }
