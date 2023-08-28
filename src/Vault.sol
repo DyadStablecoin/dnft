@@ -23,7 +23,8 @@ contract Vault is IVault, AccessControl, ERC4626 {
   using SafeTransferLib   for ERC20;
   using FixedPointMathLib for uint;
 
-  bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+  bytes32 public constant MINTER_ROLE   = keccak256("MINTER_ROLE");
+  bytes32 public constant TRANSFER_ROLE = keccak256("TRANSFER_ROLE");
 
   DNft          public immutable dNft;
   Dyad          public immutable dyad;
@@ -48,8 +49,9 @@ contract Vault is IVault, AccessControl, ERC4626 {
       vaultManager = _vaultManager;
       oracle       = _oracle;
 
-      _grantRole(MINTER_ROLE, address(_vaultManager));
       _grantRole(MINTER_ROLE, address(_staking));
+      _grantRole(MINTER_ROLE, address(_vaultManager));
+      _grantRole(TRANSFER_ROLE, address(_vaultManager));
   }
 
   /*//////////////////////////////////////////////////////////////
@@ -67,7 +69,6 @@ contract Vault is IVault, AccessControl, ERC4626 {
   function collatPrice() 
     public 
     view 
-    override
     returns (uint) {
       (
         uint80 roundID,
@@ -79,6 +80,22 @@ contract Vault is IVault, AccessControl, ERC4626 {
       if (timeStamp == 0)            revert IncompleteRound();
       if (answeredInRound < roundID) revert StaleData();
       return price.toUint256();
+  }
+
+  // TODO: needs a better name!!!
+  function _transfer(
+    uint from,
+    uint to,
+    uint amount
+  ) 
+    public 
+    returns (bool) {
+      if (!hasRole(TRANSFER_ROLE, msg.sender)) revert NotTransferer();
+      return super.transferFrom(
+        address(uint160(from)),
+        address(uint160(to)),
+        amount
+      );
   }
 
   /*//////////////////////////////////////////////////////////////
@@ -101,24 +118,24 @@ contract Vault is IVault, AccessControl, ERC4626 {
   /*//////////////////////////////////////////////////////////////
                         "ERC4626" FUNCTIONS
   //////////////////////////////////////////////////////////////*/
-  function deposit(uint id, uint assets) public returns (uint shares) {
+  function deposit(uint id, uint assets) public returns (uint) {
     if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-    super.deposit(assets, address(uint160(id)));
+    return super.deposit(assets, address(uint160(id)));
   }
 
-  function mint(uint id, uint shares) public returns (uint assets) {
+  function mint(uint id, uint shares) public returns (uint) {
     if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-    super.deposit(assets, address(uint160(id)));
+    return super.deposit(shares, address(uint160(id)));
   }
 
-  function withdraw(uint id, uint assets, address receiver) public { 
+  function withdraw(uint id, uint assets, address receiver) public returns (uint) { 
     if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-    super.withdraw(assets, receiver, address(uint160(id)));
+    return super.withdraw(assets, receiver, address(uint160(id)));
   }
 
-  function redeem(uint id, uint shares, address receiver) public {
+  function redeem(uint id, uint shares, address receiver) public returns (uint) {
     if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-    super.redeem(shares, receiver, address(uint160(id)));
+    return super.redeem(shares, receiver, address(uint160(id)));
   }
 
   /*//////////////////////////////////////////////////////////////
@@ -175,21 +192,6 @@ contract Vault is IVault, AccessControl, ERC4626 {
     override 
     returns (bool) {
       revert NotTransferable();
-  }
-
-  // only vault manager
-  function _transfer(
-    uint from,
-    uint to,
-    uint amount
-  ) 
-    public 
-    returns (bool) {
-      super.transferFrom(
-        address(uint160(from)),
-        address(uint160(to)),
-        amount
-      );
   }
 
   function transferFrom(
