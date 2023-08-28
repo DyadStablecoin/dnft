@@ -53,19 +53,6 @@ contract Vault is IVault, Owned, ERC4626 {
   /*//////////////////////////////////////////////////////////////
                         CUSTOM VAULT METHODS
   //////////////////////////////////////////////////////////////*/
-  function liquidate(
-      uint id,
-      uint receiver
-  ) external {
-      if (vaultManager.collatRatio(id) < MIN_COLLATERIZATION_RATIO) {
-        _transfer(
-          id,
-          receiver,
-          balanceOf[address(uint160(id))]
-        );
-      }
-  }
-
   // TODO: only vault manager
   function mint(
     address to,
@@ -96,17 +83,6 @@ contract Vault is IVault, Owned, ERC4626 {
   /*//////////////////////////////////////////////////////////////
                           DYAD FUNCTIONS
   //////////////////////////////////////////////////////////////*/
-  // mint against collateral
-  function mintDyad(
-      uint    from, 
-      address to,
-      uint    amount 
-  ) external {
-      if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
-      if (vaultManager.collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
-      sll.mint(from, to, amount);
-  }
-
   // redeem DYAD for your shares
   function redeemDyad(
       uint    from, 
@@ -131,12 +107,22 @@ contract Vault is IVault, Owned, ERC4626 {
     public 
     returns (uint shares) {
       if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-      require((shares = previewDeposit(assets)) != 0, "ZERO_SHARES");
-      asset.safeTransferFrom(msg.sender, address(this), assets);
-      address receiver = address(uint160(id));
-      _mint(receiver, shares);
-      emit Deposit(msg.sender, receiver, assets, shares);
+      super.deposit(assets, address(uint160(id)));
   }
+
+  // function deposit(
+  //   uint id, 
+  //   uint assets
+  // ) 
+  //   public 
+  //   returns (uint shares) {
+  //     if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+  //     require((shares = previewDeposit(assets)) != 0, "ZERO_SHARES");
+  //     asset.safeTransferFrom(msg.sender, address(this), assets);
+  //     address receiver = address(uint160(id));
+  //     _mint(receiver, shares);
+  //     emit Deposit(msg.sender, receiver, assets, shares);
+  // }
 
   function mint(
     uint id, 

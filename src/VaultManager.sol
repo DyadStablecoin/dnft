@@ -100,6 +100,16 @@ contract VaultManager is IVaultManager {
       return totalUsdValue;
   }
 
+  function mintDyad(
+      uint    from, 
+      address to,
+      uint    amount 
+  ) external {
+      if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
+      if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
+      sll.mint(from, to, amount);
+  }
+
   function liquidate(
       uint from, 
       uint to 
