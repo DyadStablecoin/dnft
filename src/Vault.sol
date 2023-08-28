@@ -9,6 +9,7 @@ import {VaultManager} from "./VaultManager.sol";
 import {IVault} from "./interfaces/IVault.sol";
 import {IAggregatorV3} from "./interfaces/IAggregatorV3.sol";
 
+import {ROLES} from "@openzeppelin/contracts/access/Roles.sol";
 import {ERC4626} from "@solmate/src/mixins/ERC4626.sol";
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 import {Owned} from "@solmate/src/auth/Owned.sol";
@@ -21,8 +22,6 @@ contract Vault is IVault, Owned, ERC4626 {
   using SafeCast          for int;
   using SafeTransferLib   for ERC20;
   using FixedPointMathLib for uint;
-
-  uint public constant MIN_COLLATERIZATION_RATIO = 15e17; // 150%
 
   DNft          public immutable dNft;
   Dyad          public immutable dyad;
@@ -42,6 +41,7 @@ contract Vault is IVault, Owned, ERC4626 {
       string memory _symbol
   ) ERC4626(_asset, _name, _symbol)
     Owned(address(_staking))
+    Owned(address(_vaultManager))
   {
       dNft         = _dNft;
       dyad         = _dyad;
@@ -121,7 +121,7 @@ contract Vault is IVault, Owned, ERC4626 {
   }
 
   /*//////////////////////////////////////////////////////////////
-       INHERITED ERC4626 FUNCtIONS ARE NOT DIRECTLY CALLABLE
+       INHERITED ERC4626 FUNCTIONS ARE NOT DIRECTLY CALLABLE
   //////////////////////////////////////////////////////////////*/
   function deposit(
       uint    assets,
