@@ -121,16 +121,36 @@ contract Vault is IVault, Owned, ERC4626 {
   }
 
   /*//////////////////////////////////////////////////////////////
-                  ERC4626 IS NOT DIRECTLY CALLABLE
+       INHERITED ERC4626 FUNCtIONS ARE NOT DIRECTLY CALLABLE
   //////////////////////////////////////////////////////////////*/
   function deposit(
-    uint    assets,
-    address receiver
-  ) 
-    public 
-    override 
-    returns (uint shares) {
+      uint    assets,
+      address receiver
+  ) public override returns (uint shares) {
       revert NotSupported();
+  }
+
+  function mint(
+      uint    shares,
+      address receiver
+  ) public override returns (uint assets) {
+      revert NotSupported();
+  }
+
+  function withdraw(
+      uint    assets,
+      address receiver,
+      address owner
+  ) public override returns (uint shares) {
+    revert NotSupported();
+  }
+
+  function redeem(
+      uint    shares,
+      address receiver,
+      address owner
+  ) public override returns (uint assets) {
+    revert NotSupported();
   }
 
   /*//////////////////////////////////////////////////////////////
