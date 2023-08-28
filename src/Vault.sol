@@ -9,7 +9,7 @@ import {VaultManager} from "./VaultManager.sol";
 import {IVault} from "./interfaces/IVault.sol";
 import {IAggregatorV3} from "./interfaces/IAggregatorV3.sol";
 
-import {ROLES} from "@openzeppelin/contracts/access/Roles.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {ERC4626} from "@solmate/src/mixins/ERC4626.sol";
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 import {Owned} from "@solmate/src/auth/Owned.sol";
@@ -18,10 +18,12 @@ import {SafeTransferLib} from "@solmate/src/utils/SafeTransferLib.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import {SafeTransferLib} from "@solmate/src/utils/SafeTransferLib.sol";
 
-contract Vault is IVault, Owned, ERC4626 {
+contract Vault is IVault, AccessControl, ERC4626 {
   using SafeCast          for int;
   using SafeTransferLib   for ERC20;
   using FixedPointMathLib for uint;
+
+  bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
   DNft          public immutable dNft;
   Dyad          public immutable dyad;
@@ -39,26 +41,25 @@ contract Vault is IVault, Owned, ERC4626 {
       ERC20         _asset,
       string memory _name,
       string memory _symbol
-  ) ERC4626(_asset, _name, _symbol)
-    Owned(address(_staking))
-    Owned(address(_vaultManager))
-  {
+  ) ERC4626(_asset, _name, _symbol) {
       dNft         = _dNft;
       dyad         = _dyad;
       sll          = _sll;
       vaultManager = _vaultManager;
       oracle       = _oracle;
+
+      _grantRole(MINTER_ROLE, address(_vaultManager));
+      _grantRole(MINTER_ROLE, address(_staking));
   }
 
   /*//////////////////////////////////////////////////////////////
                         CUSTOM VAULT METHODS
   //////////////////////////////////////////////////////////////*/
-  // TODO: only vault manager
   function mint(
-    address to,
-    uint    amount
-  ) external
-    onlyOwner {
+      address to,
+      uint    amount
+  ) external {
+      if (!hasRole(MINTER_ROLE, msg.sender)) revert NotMinter();
       super._mint(to, amount);
   }
 
