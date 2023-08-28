@@ -217,6 +217,9 @@ contract Vault is IVault, AccessControl, ERC4626 {
       revert NotTransferable();
   }
 
+  /*//////////////////////////////////////////////////////////////
+                    OVERRIDDEN ERC4626 FUNCTIONS
+  //////////////////////////////////////////////////////////////*/
   function totalAssets() 
     public 
     view 
