@@ -3,7 +3,6 @@ pragma solidity =0.8.17;
 
 import {DNft} from "./DNft.sol";
 import {Dyad} from "./DYAD.sol";
-import {SLL} from "./SLL.sol";
 import {Staking} from "./Staking.sol";
 import {VaultManager} from "./VaultManager.sol";
 import {IVault} from "./interfaces/IVault.sol";
@@ -27,15 +26,11 @@ contract Vault is IVault, AccessControl, ERC4626 {
   bytes32 public constant TRANSFER_ROLE = keccak256("TRANSFER_ROLE");
 
   DNft          public immutable dNft;
-  Dyad          public immutable dyad;
-  SLL           public immutable sll;
   VaultManager  public immutable vaultManager;
   IAggregatorV3 public immutable oracle;
 
   constructor(
       DNft          _dNft,
-      Dyad          _dyad,
-      SLL           _sll, 
       VaultManager  _vaultManager,
       IAggregatorV3 _oracle,
       Staking       _staking, 
@@ -44,8 +39,6 @@ contract Vault is IVault, AccessControl, ERC4626 {
       string memory _symbol
   ) ERC4626(_asset, _name, _symbol) {
       dNft         = _dNft;
-      dyad         = _dyad;
-      sll          = _sll;
       vaultManager = _vaultManager;
       oracle       = _oracle;
 
