@@ -100,77 +100,24 @@ contract Vault is IVault, Owned, ERC4626 {
   /*//////////////////////////////////////////////////////////////
                         "ERC4626" FUNCTIONS
   //////////////////////////////////////////////////////////////*/
-  function deposit(
-    uint id, 
-    uint assets
-  ) 
-    public 
-    returns (uint shares) {
-      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-      super.deposit(assets, address(uint160(id)));
+  function deposit(uint id, uint assets) public returns (uint shares) {
+    if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+    super.deposit(assets, address(uint160(id)));
   }
 
-  // function deposit(
-  //   uint id, 
-  //   uint assets
-  // ) 
-  //   public 
-  //   returns (uint shares) {
-  //     if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-  //     require((shares = previewDeposit(assets)) != 0, "ZERO_SHARES");
-  //     asset.safeTransferFrom(msg.sender, address(this), assets);
-  //     address receiver = address(uint160(id));
-  //     _mint(receiver, shares);
-  //     emit Deposit(msg.sender, receiver, assets, shares);
-  // }
-
-  function mint(
-    uint id, 
-    uint shares
-  ) 
-    public 
-    returns (uint assets) {
-      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-      assets = previewMint(shares); 
-      asset.safeTransferFrom(msg.sender, address(this), assets);
-      address receiver = address(uint160(id));
-      _mint(receiver, shares);
-      emit Deposit(msg.sender, receiver, assets, shares);
-      return assets;
+  function mint(uint id, uint shares) public returns (uint assets) {
+    if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+    super.deposit(assets, address(uint160(id)));
   }
 
-  function withdraw(
-    uint    id, 
-    uint    assets,
-    address receiver
-  ) 
-    public 
-    virtual 
-    returns (uint shares) {
-      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-      shares = previewWithdraw(assets); 
-      beforeWithdraw(assets, shares);
-      address owner = address(uint160(id));
-      _burn(owner, shares);
-      emit Withdraw(msg.sender, receiver, owner, assets, shares);
-      asset.safeTransfer(receiver, assets);
+  function withdraw(uint id, uint assets, address receiver) public { 
+    if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+    super.withdraw(assets, receiver, address(uint160(id)));
   }
 
-  function redeem(
-    uint    id, 
-    uint    shares,
-    address receiver
-  ) 
-    public 
-    virtual 
-    returns (uint assets) {
-      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-      require((assets = previewRedeem(shares)) != 0, "ZERO_ASSETS");
-      beforeWithdraw(assets, shares);
-      address owner = address(uint160(id));
-      _burn(owner, shares);
-      emit Withdraw(msg.sender, receiver, owner, assets, shares);
-      asset.safeTransfer(receiver, assets);
+  function redeem(uint id, uint shares, address receiver) public {
+    if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+    super.redeem(shares, receiver, address(uint160(id)));
   }
 
   /*//////////////////////////////////////////////////////////////
