@@ -10,13 +10,13 @@ import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 
 interface IVault {
-  function asset()       external view returns (ERC20);
   function collatPrice() external view returns (uint);
   function decimals()    external view returns (uint);
   function balanceOf(uint id) external view returns (uint);
   function mint(address to, uint amount) external returns (bool);
   function withdraw(uint assets, address receiver, address owner) external returns (uint);
   function move(uint from, uint to, uint amount) external returns (bool);
+  function convertToAssets(uint shares) external returns (uint);
 }
 
 contract VaultManager is IVaultManager {
@@ -47,6 +47,7 @@ contract VaultManager is IVaultManager {
       uint    id,
       address vault
   ) external {
+      // TODO: should we check for the vault interface/permissions?
       if (dNft.ownerOf(id)  != msg.sender) revert OnlyOwner(); 
       if (vaults[id].length  > MAX_VAULTS) revert TooManyVaults();
       if (!sll.isLicensed(vault))          revert VaultNotLicensed();
@@ -95,7 +96,8 @@ contract VaultManager is IVaultManager {
       uint numberOfVaults = vaults[id].length;
       for (uint i = 0; i < numberOfVaults; i++) {
         IVault vault    = IVault(vaults[id][i]);
-        uint   usdVaule = vault.asset().balanceOf(address(uint160(id))) * vault.collatPrice();
+        uint   usdVaule = vault.convertToAssets(vault.balanceOf(id)) * vault.collatPrice();
+        // should be based on the collateral per share
         totalUsdValue += usdVaule / (10**vault.decimals());
       }
       return totalUsdValue;
