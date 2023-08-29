@@ -5,19 +5,28 @@ import {Owned} from "@solmate/src/auth/Owned.sol";
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 
 contract Dyad is ERC20("DYAD Stable", "DYAD", 18), Owned {
-  mapping (uint => uint) public mintedDyad; // dNft id => minted dyad
+  mapping (address => mapping (uint => uint)) public mintedDyad; // dNft id => minted dyad
 
-  constructor(address owner) 
-    Owned(owner) {}
+  constructor(address owner) Owned(owner) {}
 
-  function mint(uint id, address to, uint amount) external onlyOwner {
-    _mint(to, amount);
-    mintedDyad[id] += amount;
+  function mint(
+      address manager,
+      uint    id,
+      address to,
+      uint    amount
+  ) external onlyOwner {
+      _mint(to, amount);
+      mintedDyad[manager][id] += amount;
   }
 
-  function burn(uint id, address from, uint amount) external onlyOwner {
-    _burn(from, amount);
-    mintedDyad[id] -= amount;
+  function burn(
+      address manager,
+      uint    id,
+      address from,
+      uint    amount
+  ) external onlyOwner {
+      _burn(from, amount);
+      mintedDyad[manager][id] -= amount;
   }
 
   // vault manager to mint
