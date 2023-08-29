@@ -5,7 +5,8 @@ import {Owned} from "@solmate/src/auth/Owned.sol";
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 
 contract Dyad is ERC20("DYAD Stable", "DYAD", 18), Owned {
-  mapping (address => mapping (uint => uint)) public mintedDyad; // dNft id => minted dyad
+  // manager => (dNft id => minted dyad)
+  mapping (address => mapping (uint => uint)) public mintedDyad; 
 
   constructor(address owner) Owned(owner) {}
 
