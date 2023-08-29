@@ -130,7 +130,6 @@ contract VaultManager is IVaultManager {
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CR_NotLowEnough();
       uint mintedDyad = dyad.mintedDyad(from);
       dyad.burn(from, msg.sender, mintedDyad);
-      // sll.setMintedDyad(from, 0);
       uint totalUsdValue = getVaultsUsdValue(from);
       uint sharesBonus   = mintedDyad.divWadDown(totalUsdValue) - uint(2).divWadDown(3);
       uint numberOfVaults = vaults[from].length;
