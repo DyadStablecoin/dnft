@@ -75,8 +75,7 @@ contract Vault is IVault, AccessControl, ERC4626 {
       return price.toUint256();
   }
 
-  // TODO: needs a better name!!!
-  function _transfer(
+  function move(
     uint from,
     uint to,
     uint amount

@@ -16,7 +16,7 @@ interface IVault {
   function balanceOf(uint id) external view returns (uint);
   function mint(address to, uint amount) external returns (bool);
   function withdraw(uint assets, address receiver, address owner) external returns (uint);
-  function _transfer(uint from, uint to, uint amount) external returns (bool);
+  function move(uint from, uint to, uint amount) external returns (bool);
 }
 
 contract VaultManager is IVaultManager {
@@ -137,7 +137,7 @@ contract VaultManager is IVaultManager {
       for (uint i = 0; i < numberOfVaults; i++) {
         IVault vault = IVault(vaults[from][i]);
         uint shares = vault.balanceOf(from);
-        vault._transfer(
+        vault.move(
           from,
           to,
           shares
