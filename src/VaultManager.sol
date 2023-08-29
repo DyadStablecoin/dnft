@@ -19,6 +19,7 @@ interface IVault {
   function convertToAssets(uint shares) external returns (uint);
 }
 
+// TODO: use access control from oz
 contract VaultManager is IVaultManager {
   using FixedPointMathLib for uint;
 
@@ -47,7 +48,6 @@ contract VaultManager is IVaultManager {
       uint    id,
       address vault
   ) external {
-      // TODO: should we check for the vault interface/permissions?
       if (dNft.ownerOf(id)  != msg.sender) revert OnlyOwner(); 
       if (vaults[id].length  > MAX_VAULTS) revert TooManyVaults();
       if (!sll.isLicensed(vault))          revert VaultNotLicensed();

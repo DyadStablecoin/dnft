@@ -4,11 +4,10 @@ pragma solidity =0.8.17;
 import {Owned} from "@solmate/src/auth/Owned.sol";
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 
-contract Dyad is ERC20, Owned {
+contract Dyad is ERC20("DYAD Stable", "DYAD", 18), Owned {
   mapping (uint => uint) public mintedDyad; // dNft id => minted dyad
 
   constructor(address owner) 
-    ERC20("DYAD Stable", "DYAD", 18) 
     Owned(owner) {}
 
   function mint(uint id, address to, uint amount) external onlyOwner {
@@ -20,4 +19,8 @@ contract Dyad is ERC20, Owned {
     _burn(from, amount);
     mintedDyad[id] -= amount;
   }
+
+  // vault manager to mint
+  // vault to use as collateral for vault manager
+  // we have 2 SLL
 }
