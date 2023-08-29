@@ -97,7 +97,6 @@ contract VaultManager is IVaultManager {
       for (uint i = 0; i < numberOfVaults; i++) {
         IVault vault    = IVault(vaults[id][i]);
         uint   usdVaule = vault.convertToAssets(vault.balanceOf(id)) * vault.collatPrice();
-        // should be based on the collateral per share
         totalUsdValue += usdVaule / (10**vault.decimals());
       }
       return totalUsdValue;
