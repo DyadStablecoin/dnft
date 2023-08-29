@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-import {IVaultManager} from "./IVaultManager.sol";
+import {IVaultManager} from "./interfaces/IVaultManager.sol";
 import {DNft} from "./DNft.sol";
 import {SLL} from "./SLL.sol";
 import {Dyad} from "./DYAD.sol";
