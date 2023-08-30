@@ -14,8 +14,8 @@ contract SLL is ISLL {
 
   DNft public immutable dNft;
 
-  uint public constant LICENSE_THRESHOLD   = 66_0000000000000000; // 66%
-  uint public constant UNLICENSE_THRESHOLD = 50_0000000000000000; // 50%
+  uint public constant LICENSE_THRESHOLD   = 66e16; // 66%
+  uint public constant UNLICENSE_THRESHOLD = 50e16; // 50%
 
   mapping (address => uint) public votes;                           // vault   => votes
   mapping (uint    => mapping (address => bool)) public hasVoted;   // dNft id => voted

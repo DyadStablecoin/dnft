@@ -19,6 +19,7 @@ interface IVault {
   function convertToAssets(uint shares) external returns (uint);
 }
 
+// TODO: use access control from oz
 contract VaultManager is IVaultManager {
   using FixedPointMathLib for uint;
 
@@ -47,7 +48,6 @@ contract VaultManager is IVaultManager {
       uint    id,
       address vault
   ) external {
-      // TODO: should we check for the vault interface/permissions?
       if (dNft.ownerOf(id)  != msg.sender) revert OnlyOwner(); 
       if (vaults[id].length  > MAX_VAULTS) revert TooManyVaults();
       if (!sll.isLicensed(vault))          revert VaultNotLicensed();
@@ -82,7 +82,7 @@ contract VaultManager is IVaultManager {
     view 
     returns (uint) {
       uint totalUsdValue = getVaultsUsdValue(id);
-      uint _dyad = dyad.mintedDyad(id); // save gas
+      uint _dyad = dyad.mintedDyad(msg.sender, id); // save gas
       if (_dyad == 0) return type(uint).max;
       return totalUsdValue.divWadDown(_dyad);
   }
@@ -109,7 +109,7 @@ contract VaultManager is IVaultManager {
   ) external {
       if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
-      dyad.mint(from, to, amount);
+      dyad.mint(msg.sender, from, to, amount);
   }
 
   function redeemDyad(
@@ -119,7 +119,7 @@ contract VaultManager is IVaultManager {
       uint    amount
   ) external {
       if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
-      dyad.burn(from, msg.sender, amount);
+      dyad.burn(msg.sender, from, msg.sender, amount);
       uint collat = amount * (10**vault.decimals()) / vault.collatPrice();
       vault.withdraw(collat, to, address(uint160(from)));
   }
@@ -129,8 +129,8 @@ contract VaultManager is IVaultManager {
       uint to 
   ) external {
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CR_NotLowEnough();
-      uint mintedDyad = dyad.mintedDyad(from);
-      dyad.burn(from, msg.sender, mintedDyad);
+      uint mintedDyad = dyad.mintedDyad(msg.sender, from);
+      dyad.burn(msg.sender, from, msg.sender, mintedDyad);
       uint totalUsdValue = getVaultsUsdValue(from);
       uint sharesBonus   = mintedDyad.divWadDown(totalUsdValue) - uint(2).divWadDown(3);
       uint numberOfVaults = vaults[from].length;
