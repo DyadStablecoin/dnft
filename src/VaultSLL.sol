@@ -8,4 +8,3 @@ import {SLL} from "./SLL.sol";
 contract VaultSLL is SLL {
   constructor(DNft _dNft) SLL(_dNft, 60e16, 40e16) {}
 }
-

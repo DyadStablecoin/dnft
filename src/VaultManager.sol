@@ -3,7 +3,7 @@ pragma solidity =0.8.17;
 
 import {IVaultManager} from "./interfaces/IVaultManager.sol";
 import {DNft} from "./DNft.sol";
-import {SLL} from "./SLL.sol";
+import {VaultSLL} from "./VaultSLL.sol";
 import {Dyad} from "./DYAD.sol";
 
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
@@ -19,13 +19,12 @@ interface IVault {
   function convertToAssets(uint shares) external returns (uint);
 }
 
-// TODO: use access control from oz
 contract VaultManager is IVaultManager {
   using FixedPointMathLib for uint;
 
-  DNft public immutable dNft;
-  SLL  public immutable sll;
-  Dyad public immutable dyad;
+  DNft      public immutable dNft;
+  VaultSLL  public immutable sll;
+  Dyad      public immutable dyad;
 
   uint public constant MAX_VAULTS = 5;
   uint public constant MIN_COLLATERIZATION_RATIO = 15e17; // 150%
@@ -35,9 +34,9 @@ contract VaultManager is IVaultManager {
   mapping (uint => mapping (address => bool)) public isDNftVault;
 
   constructor(
-    DNft _dNft,
-    SLL  _sll,
-    Dyad _dyad
+    DNft      _dNft,
+    VaultSLL  _sll,
+    Dyad      _dyad
   ) {
     dNft = _dNft;
     sll  = _sll;
