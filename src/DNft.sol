@@ -49,7 +49,6 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
 
   function _mintNft(address to)
     private 
-      // TODO: check for minter role && transfer role
     returns (uint) {
       uint id = totalSupply();
       _safeMint(to, id); 
