@@ -55,7 +55,7 @@ abstract contract SLL is ISLL {
     isLicensed[vault] = true;
   }
 
-  function unlicense(address vault) external {
+  function removeLicense(address vault) external {
     if (votes[vault].divWadDown(dNft.totalSupply()) > UNLICENSE_THRESHOLD) {
       revert TooManyVotes();
     }
