@@ -18,16 +18,6 @@ abstract contract SLL is ISLL {
   mapping (uint    => mapping (address => bool)) public hasVoted; // dNft id => voted
   mapping (address => bool) public isLicensed; // vault => is licensed
 
-  // DNft id => (address => is delegate)
-  mapping (uint => mapping (address => bool)) public isDelegate;
-
-  modifier isNftOwnerOrIsDelegate(uint id) {
-    if (dNft.ownerOf(id) != msg.sender && !isDelegate[id][msg.sender]) {
-      revert NotOwnerOrDelegate();
-    }
-    _;
-  }
-
   constructor(
     DNft _dNft, 
     uint licenseThreshold,
@@ -38,27 +28,12 @@ abstract contract SLL is ISLL {
     UNLICENSE_THRESHOLD = unlicenseThreshold;
   }
 
-  function delegate(
-      uint    id,
-      address _delegate
-  ) external {
-      if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner(); 
-      isDelegate[id][_delegate] = true;
-  }
-
-  function removeDelegate(
-      uint    id,
-      address _delegate
-  ) external {
-      if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner(); 
-      isDelegate[id][_delegate] = false;
-  }
-
   function vote(
       uint    id,
       address vault
-  ) external isNftOwnerOrIsDelegate(id) {
-      if (hasVoted[id][vault]) revert VotedBefore(); 
+  ) external {
+      if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner(); 
+      if (hasVoted[id][vault])            revert VotedBefore(); 
       hasVoted[id][vault] = true;
       votes[vault]       += 1;
   }
@@ -66,8 +41,9 @@ abstract contract SLL is ISLL {
   function removeVote(
       uint    id,
       address vault
-  ) external isNftOwnerOrIsDelegate(id) {
-      if (!hasVoted[id][vault]) revert NotVotedBefore();
+  ) external {
+      if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner();
+      if (!hasVoted[id][vault])           revert NotVotedBefore();
       hasVoted[id][vault] = false;
       votes[vault]       -= 1;
   }
