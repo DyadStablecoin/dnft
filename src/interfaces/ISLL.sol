@@ -3,6 +3,7 @@ pragma solidity =0.8.17;
 
 interface ISLL {
   error OnlyOwner();
+  error NotOwnerOrDelegate();
   error VotedBefore();
   error NotVotedBefore();
   error NotEnoughVotes();

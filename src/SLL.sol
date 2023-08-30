@@ -18,6 +18,16 @@ abstract contract SLL is ISLL {
   mapping (uint    => mapping (address => bool)) public hasVoted; // dNft id => voted
   mapping (address => bool) public isLicensed; // vault => is licensed
 
+  // DNft id => (address => is delegate)
+  mapping (uint => mapping (address => bool)) public isDelegate;
+
+  modifier isNftOwnerOrIsDelegate(uint id) {
+    if (dNft.ownerOf(id) != msg.sender && !isDelegate[id][msg.sender]) {
+      revert NotOwnerOrDelegate();
+    }
+    _;
+  }
+
   constructor(
     DNft _dNft, 
     uint licenseThreshold,
@@ -28,37 +38,51 @@ abstract contract SLL is ISLL {
     UNLICENSE_THRESHOLD = unlicenseThreshold;
   }
 
-  function vote(
+  function delegate(
       uint    id,
-      address account
+      address _delegate
   ) external {
       if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner(); 
-      if (hasVoted[id][account])          revert VotedBefore(); 
-      hasVoted[id][account] = true;
-      votes[account]       += 1;
+      isDelegate[id][_delegate] = true;
+  }
+
+  function removeDelegate(
+      uint    id,
+      address _delegate
+  ) external {
+      if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner(); 
+      isDelegate[id][_delegate] = false;
+  }
+
+  function vote(
+      uint    id,
+      address vault
+  ) external isNftOwnerOrIsDelegate(id) {
+      if (hasVoted[id][vault]) revert VotedBefore(); 
+      hasVoted[id][vault] = true;
+      votes[vault]       += 1;
   }
 
   function removeVote(
       uint    id,
-      address account
-  ) external {
-      if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner();
-      if (!hasVoted[id][account])         revert NotVotedBefore();
-      hasVoted[id][account] = false;
-      votes[account]       -= 1;
+      address vault
+  ) external isNftOwnerOrIsDelegate(id) {
+      if (!hasVoted[id][vault]) revert NotVotedBefore();
+      hasVoted[id][vault] = false;
+      votes[vault]       -= 1;
   }
 
-  function license(address account) external {
-    if (votes[account].divWadDown(dNft.totalSupply()) <= LICENSE_THRESHOLD) {
+  function license(address vault) external {
+    if (votes[vault].divWadDown(dNft.totalSupply()) <= LICENSE_THRESHOLD) {
       revert NotEnoughVotes();
     }
-    isLicensed[account] = true;
+    isLicensed[vault] = true;
   }
 
-  function unlicense(address account) external {
-    if (votes[account].divWadDown(dNft.totalSupply()) > UNLICENSE_THRESHOLD) {
+  function unlicense(address vault) external {
+    if (votes[vault].divWadDown(dNft.totalSupply()) > UNLICENSE_THRESHOLD) {
       revert TooManyVotes();
     }
-    isLicensed[account] = false;
+    isLicensed[vault] = false;
   }
 }
