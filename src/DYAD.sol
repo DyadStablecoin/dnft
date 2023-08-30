@@ -1,36 +1,34 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-import {Owned} from "@solmate/src/auth/Owned.sol";
+import {SLL} from "./SLL.sol";
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 
-contract Dyad is ERC20("DYAD Stable", "DYAD", 18), Owned {
+contract Dyad is ERC20("DYAD Stable", "DYAD", 18) {
+  SLL public immutable sll;
+
   // manager => (dNft id => minted dyad)
   mapping (address => mapping (uint => uint)) public mintedDyad; 
 
-  constructor(address owner) Owned(owner) {}
+  constructor(SLL _sll) { sll = _sll; }
 
   function mint(
-      address manager,
       uint    id,
       address to,
       uint    amount
-  ) external onlyOwner {
+  ) external {
+      if (!sll.isLicensed(msg.sender)) revert NotLicensed();
+      mintedDyad[msg.sender][id] += amount;
       _mint(to, amount);
-      mintedDyad[manager][id] += amount;
   }
 
   function burn(
-      address manager,
       uint    id,
       address from,
       uint    amount
-  ) external onlyOwner {
+  ) external {
+      if (!sll.isLicensed(msg.sender)) revert NotLicensed();
+      mintedDyad[msg.sender][id] -= amount;
       _burn(from, amount);
-      mintedDyad[manager][id] -= amount;
   }
-
-  // vault manager to mint
-  // vault to use as collateral for vault manager
-  // we have 2 SLL
 }
