@@ -7,6 +7,8 @@ import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 contract Dyad is ERC20("DYAD Stable", "DYAD", 18) {
   SLL public immutable sll;
 
+  error NotLicensed();
+
   // manager => (dNft id => minted dyad)
   mapping (address => mapping (uint => uint)) public mintedDyad; 
 
