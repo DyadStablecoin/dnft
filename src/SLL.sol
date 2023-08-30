@@ -8,63 +8,52 @@ import {VaultManager} from "./VaultManager.sol";
 
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 
-// SLL := Social Licensing Layer
+// SLL := Social Licensing Layer for Vault Managers
 contract SLL is ISLL {
   using FixedPointMathLib for uint; 
 
-  VaultManager public immutable vaultManager;
-  DNft         public immutable dNft;
-  Dyad         public immutable dyad;
+  DNft public immutable dNft;
 
   uint public constant LICENSE_THRESHOLD   = 66_0000000000000000; // 66%
   uint public constant UNLICENSE_THRESHOLD = 50_0000000000000000; // 50%
 
   mapping (address => uint) public votes;                           // vault   => votes
   mapping (uint    => mapping (address => bool)) public hasVoted;   // dNft id => voted
-  mapping (address => bool) public isLicensed; // vault   => is licensed
-  mapping (uint    => uint) public mintedDyad; // dNft id => minted dyad
+  mapping (address => bool) public isLicensed; // vault => is licensed
 
-  constructor(
-    VaultManager _vaultManager,
-    DNft         _dNft,
-    Dyad         _dyad
-  ) { 
-    vaultManager = _vaultManager;
-    dNft         = _dNft;
-    dyad         = _dyad;
-  }
+  constructor(DNft _dNft) { dNft = _dNft; }
 
   function vote(
       uint    id,
-      address vault
+      address vaultManager
   ) external {
       if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner(); 
-      if (hasVoted[id][vault])            revert VotedBefore(); 
-      hasVoted[id][vault]  = true;
-      votes[vault] += 1;
+      if (hasVoted[id][vaultManager])     revert VotedBefore(); 
+      hasVoted[id][vaultManager] = true;
+      votes[vaultManager]       += 1;
   }
 
   function removeVote(
       uint    id,
-      address vault
+      address vaultManager
   ) external {
       if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner();
-      if (!hasVoted[id][vault])           revert NotVotedBefore();
-      hasVoted[id][vault]  = false;
-      votes[vault] -= 1;
+      if (!hasVoted[id][vaultManager])    revert NotVotedBefore();
+      hasVoted[id][vaultManager] = false;
+      votes[vaultManager]       -= 1;
   }
 
-  function license(address vault) external {
-    if (votes[vault].divWadDown(dNft.totalSupply()) <= LICENSE_THRESHOLD) {
+  function license(address vaultManager) external {
+    if (votes[vaultManager].divWadDown(dNft.totalSupply()) <= LICENSE_THRESHOLD) {
       revert NotEnoughVotes();
     }
-    isLicensed[vault] = true;
+    isLicensed[vaultManager] = true;
   }
 
-  function unlicense(address vault) external {
-    if (votes[vault].divWadDown(dNft.totalSupply()) > UNLICENSE_THRESHOLD) {
+  function unlicense(address vaultManager) external {
+    if (votes[vaultManager].divWadDown(dNft.totalSupply()) > UNLICENSE_THRESHOLD) {
       revert TooManyVotes();
     }
-    isLicensed[vault] = false;
+    isLicensed[vaultManager] = false;
   }
 }
