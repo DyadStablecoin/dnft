@@ -19,6 +19,7 @@ contract VaultManagerTest is Test {
   
   address constant RANDOM_VAULT_1 = address(42);
   address constant RANDOM_VAULT_2 = address(314159);
+  address constant RANDOM_VAULT_3 = address(69);
   
   function setUp() public {
     dNft = new DNft();
@@ -66,11 +67,30 @@ contract VaultManagerTest is Test {
     vaultSLL.vote(id, RANDOM_VAULT_1);
     vaultSLL.license(RANDOM_VAULT_1);
     vaultManager.add(id, RANDOM_VAULT_1);
-    vaultManager.remove(id, RANDOM_VAULT_1);
+    vaultManager.remove(id, 0);
     assertEq(vaultManager.isDNftVault(id, RANDOM_VAULT_1), false);
     assertEq(vaultManager.getVaultsCount(id), 0);
     vm.expectRevert();
     vaultManager.vaults(id, 0);
+  }
+
+  function test_removeThreeVaults() public {
+    uint id = dNft.mintNft{value: 1 ether}(address(this));
+    vaultSLL.vote(id, RANDOM_VAULT_1);
+    vaultSLL.vote(id, RANDOM_VAULT_2);
+    vaultSLL.vote(id, RANDOM_VAULT_3);
+    vaultSLL.license(RANDOM_VAULT_1);
+    vaultSLL.license(RANDOM_VAULT_2);
+    vaultSLL.license(RANDOM_VAULT_3);
+    vaultManager.add(id, RANDOM_VAULT_1);
+    vaultManager.add(id, RANDOM_VAULT_2);
+    vaultManager.add(id, RANDOM_VAULT_3);
+    vaultManager.remove(id, 0);
+    assertEq(vaultManager.getVaultsCount(id), 2);
+    vaultManager.remove(id, 0);
+    assertEq(vaultManager.getVaultsCount(id), 1);
+    vaultManager.remove(id, 0);
+    assertEq(vaultManager.getVaultsCount(id), 0);
   }
 
   ///////////////////////////

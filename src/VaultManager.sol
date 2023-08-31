@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
+import "forge-std/console.sol";
+
 import {IVaultManager} from "./interfaces/IVaultManager.sol";
 import {DNft} from "./DNft.sol";
 import {VaultSLL} from "./VaultSLL.sol";
@@ -30,7 +32,6 @@ contract VaultManager is IVaultManager {
   uint public constant MIN_COLLATERIZATION_RATIO = 15e17; // 150%
 
   mapping (uint => address[])                 public vaults; 
-  mapping (uint => mapping (address => uint)) public vaultsIndex;
   mapping (uint => mapping (address => bool)) public isDNftVault;
 
   constructor(
@@ -53,27 +54,22 @@ contract VaultManager is IVaultManager {
       if (isDNftVault[id][vault])          revert VaultAlreadyAdded();
       vaults[id].push(vault);
       isDNftVault[id][vault] = true;
-      vaultsIndex[id][vault] = vaults[id].length - 1;
       emit Added(id, vault);
   }
 
+  // Does not respect the order
   function remove(
-      uint    id,
-      address vault
+      uint id,
+      uint index
   ) external {
-      if (dNft.ownerOf(id)  != msg.sender) revert OnlyOwner();
-      if (!isDNftVault[id][vault])         revert NotDNftVault();
-      uint index        = vaultsIndex[id][vault];
+      if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner();
+      address vault = vaults[id][index];
+      if (!isDNftVault[id][vault])        revert NotDNftVault();
       uint vaultsLength = vaults[id].length;
-      address oldVault  = vaults[id][index];
-      for (uint i = index; i < vaultsLength - 1; ) {
-        vaults[i] = vaults[i+1];
-        unchecked { i++; }
-      }
+      vaults[id][index] = vaults[id][vaultsLength - 1];
       vaults[id].pop();
-      isDNftVault[id][oldVault] = false;
-      vaultsIndex[id][oldVault] = 0; 
-      emit Removed(id, oldVault);
+      isDNftVault[id][vault] = false;
+      emit Removed(id, vault);
   }
 
   function collatRatio(
