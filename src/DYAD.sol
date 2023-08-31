@@ -15,7 +15,7 @@ contract Dyad is ERC20("DYAD Stable", "DYAD", 18) {
   constructor(SLL _sll) { sll = _sll; }
 
   function mint(
-      uint    id,
+      uint    id, // we trust the caller to use an id that exists
       address to,
       uint    amount
   ) external {
@@ -25,7 +25,7 @@ contract Dyad is ERC20("DYAD Stable", "DYAD", 18) {
   }
 
   function burn(
-      uint    id,
+      uint    id, // we trust the caller to use an id that exists
       address from,
       uint    amount
   ) external {
