@@ -94,8 +94,11 @@ contract VaultManager is IVaultManager {
       uint numberOfVaults = vaults[id].length;
       for (uint i = 0; i < numberOfVaults; i++) {
         IVault vault    = IVault(vaults[id][i]);
-        uint   usdVaule = vault.convertToAssets(vault.balanceOf(id)) * vault.collatPrice();
-        totalUsdValue += usdVaule / (10**vault.decimals());
+        uint usdValue;
+        if (sll.isLicensed(address(vault))) {
+          uint   usdValue = vault.convertToAssets(vault.balanceOf(id)) * vault.collatPrice();
+        }
+        totalUsdValue += usdValue / (10**vault.decimals());
       }
       return totalUsdValue;
   }
