@@ -50,6 +50,7 @@ contract VaultManager is IVaultManager {
       if (dNft.ownerOf(id)  != msg.sender) revert OnlyOwner(); 
       if (vaults[id].length  > MAX_VAULTS) revert TooManyVaults();
       if (!sll.isLicensed(vault))          revert VaultNotLicensed();
+      if (isDNftVault[id][vault])          revert VaultAlreadyAdded();
       vaults[id].push(vault);
       isDNftVault[id][vault] = true;
       vaultsIndex[id][vault] = vaults[id].length - 1;
