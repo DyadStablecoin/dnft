@@ -11,8 +11,8 @@ import { DNft } from "../src/DNft.sol";
 import { Dyad } from "../src/Dyad.sol";
 
 contract SLLTest is Test {
- DNft dNft;
- Dyad dyad;
+ DNft            dNft;
+ Dyad            dyad;
  VaultManagerSLL sll;
 
  address constant RANDOM_VAULT = address(211);
