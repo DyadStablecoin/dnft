@@ -56,7 +56,21 @@ contract VaultManagerTest is Test {
     assertEq(vaultManager.vaults(id, 1), RANDOM_VAULT_2);
     assertEq(vaultManager.getVaultsCount(id), 2);
     vm.expectRevert();
-    assertEq(vaultManager.vaults(id, 2), address(0)); // out of bounds
+    vaultManager.vaults(id, 2); // out of bounds
+  }
+
+  ///////////////////////////
+  // remove
+  function test_remove() public {
+    uint id = dNft.mintNft{value: 1 ether}(address(this));
+    vaultSLL.vote(id, RANDOM_VAULT_1);
+    vaultSLL.license(RANDOM_VAULT_1);
+    vaultManager.add(id, RANDOM_VAULT_1);
+    vaultManager.remove(id, RANDOM_VAULT_1);
+    assertEq(vaultManager.isDNftVault(id, RANDOM_VAULT_1), false);
+    assertEq(vaultManager.getVaultsCount(id), 0);
+    vm.expectRevert();
+    vaultManager.vaults(id, 0);
   }
 
   ///////////////////////////
