@@ -75,23 +75,28 @@ contract SLLTest is Test {
  ///////////////////////////
  // license
  function test_license() public {
-   vote();
+   for (uint i = 0; i < 12; i++) {
+     vote();
+   }
+   for (uint i = 0; i < 3; i++) {
+     dNft.mintNft{value: 1 ether}(address(this));
+   }
    assertFalse(sll.isLicensed(RANDOM_VAULT));
    sll.license(RANDOM_VAULT);
    assertTrue(sll.isLicensed(RANDOM_VAULT));
  }
 
-//  ///////////////////////////
-//  // unlicense
-//  function test_unlicense() public {
-//    uint id = vote();
-//    assertFalse(sll.isLicensed(RANDOM_VAULT));
-//    sll.license(RANDOM_VAULT);
-//    assertTrue(sll.isLicensed(RANDOM_VAULT));
-//    sll.removeVote(id, RANDOM_VAULT);
-//    sll.unlicense(RANDOM_VAULT);
-//    assertFalse(sll.isLicensed(RANDOM_VAULT));
-//  }
+ ///////////////////////////
+ // remove license
+ function test_removeLicense() public {
+   uint id = vote();
+   assertFalse(sll.isLicensed(RANDOM_VAULT));
+   sll.license(RANDOM_VAULT);
+   assertTrue(sll.isLicensed(RANDOM_VAULT));
+   sll.removeVote(id, RANDOM_VAULT);
+   sll.removeLicense(RANDOM_VAULT);
+   assertFalse(sll.isLicensed(RANDOM_VAULT));
+ }
 
  receive() external payable {}
 
