@@ -94,6 +94,12 @@ contract VaultManagerTest is Test {
   }
 
   ///////////////////////////
+  // collatRatio
+  function test_collatRatio() public {
+
+  }
+
+  ///////////////////////////
   // misc
   receive() external payable {}
   

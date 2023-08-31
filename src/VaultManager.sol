@@ -57,7 +57,7 @@ contract VaultManager is IVaultManager {
       emit Added(id, vault);
   }
 
-  // Does not respect the order
+  // Does not respect the order of vaults
   function remove(
       uint id,
       uint index
