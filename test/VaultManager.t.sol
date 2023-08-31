@@ -7,7 +7,7 @@ import "forge-std/Test.sol";
 import { VaultManager } from "../src/VaultManager.sol";
 import { VaultManagerSLL } from "../src/VaultManagerSLL.sol";
 import { VaultSLL } from "../src/VaultSLL.sol";
-import { Dyad } from "../src/DYAD.sol";
+import { Dyad } from "../src/Dyad.sol";
 import { DNft } from "../src/DNft.sol";
 
 contract VaultManagerTest is Test {
@@ -17,7 +17,8 @@ contract VaultManagerTest is Test {
   VaultManagerSLL vaultManagerSLL;
   VaultSLL        vaultSLL;
   
-  address constant RANDOM_VAULT = address(42);
+  address constant RANDOM_VAULT_1 = address(42);
+  address constant RANDOM_VAULT_2 = address(314159);
   
   function setUp() public {
     dNft = new DNft();
@@ -31,11 +32,35 @@ contract VaultManagerTest is Test {
   // add
   function test_add() public {
     uint id = dNft.mintNft{value: 1 ether}(address(this));
-    vaultSLL.vote(id, RANDOM_VAULT);
-    vaultSLL.license(RANDOM_VAULT);
-    vaultManager.add(id, RANDOM_VAULT);
+    vaultSLL.vote(id, RANDOM_VAULT_1);
+    vaultSLL.license(RANDOM_VAULT_1);
+    vaultManager.add(id, RANDOM_VAULT_1);
+    assertEq(vaultManager.isDNftVault(id, RANDOM_VAULT_1), true);
+    assertEq(vaultManager.vaults(id, 0), RANDOM_VAULT_1);
+    assertEq(vaultManager.getVaultsCount(id), 1);
+    vm.expectRevert();
+    assertEq(vaultManager.vaults(id, 1), address(0)); // out of bounds
   }
 
+  function test_addTwoVaults() public {
+    uint id = dNft.mintNft{value: 1 ether}(address(this));
+    vaultSLL.vote(id, RANDOM_VAULT_1);
+    vaultSLL.vote(id, RANDOM_VAULT_2);
+    vaultSLL.license(RANDOM_VAULT_1);
+    vaultSLL.license(RANDOM_VAULT_2);
+    vaultManager.add(id, RANDOM_VAULT_1);
+    vaultManager.add(id, RANDOM_VAULT_2);
+    assertEq(vaultManager.isDNftVault(id, RANDOM_VAULT_1), true);
+    assertEq(vaultManager.isDNftVault(id, RANDOM_VAULT_2), true);
+    assertEq(vaultManager.vaults(id, 0), RANDOM_VAULT_1);
+    assertEq(vaultManager.vaults(id, 1), RANDOM_VAULT_2);
+    assertEq(vaultManager.getVaultsCount(id), 2);
+    vm.expectRevert();
+    assertEq(vaultManager.vaults(id, 2), address(0)); // out of bounds
+  }
+
+  ///////////////////////////
+  // misc
   receive() external payable {}
   
   function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {

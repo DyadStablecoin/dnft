@@ -2,7 +2,7 @@
 pragma solidity =0.8.17;
 
 import {DNft} from "./DNft.sol";
-import {Dyad} from "./DYAD.sol";
+import {Dyad} from "./Dyad.sol";
 import {Staking} from "./Staking.sol";
 import {VaultManager} from "./VaultManager.sol";
 import {IVault} from "./interfaces/IVault.sol";

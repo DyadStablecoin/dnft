@@ -1,4 +1,4 @@
-include .env
+# include .env
 
 ifdef FILE
   matchFile = --match-contract $(FILE)

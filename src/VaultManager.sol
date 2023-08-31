@@ -4,7 +4,7 @@ pragma solidity =0.8.17;
 import {IVaultManager} from "./interfaces/IVaultManager.sol";
 import {DNft} from "./DNft.sol";
 import {VaultSLL} from "./VaultSLL.sol";
-import {Dyad} from "./DYAD.sol";
+import {Dyad} from "./Dyad.sol";
 
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
@@ -93,10 +93,10 @@ contract VaultManager is IVaultManager {
       uint totalUsdValue;
       uint numberOfVaults = vaults[id].length;
       for (uint i = 0; i < numberOfVaults; i++) {
-        IVault vault    = IVault(vaults[id][i]);
+        IVault vault = IVault(vaults[id][i]);
         uint usdValue;
         if (sll.isLicensed(address(vault))) {
-          uint   usdValue = vault.convertToAssets(vault.balanceOf(id)) * vault.collatPrice();
+          uint usdValue = vault.convertToAssets(vault.balanceOf(id)) * vault.collatPrice();
         }
         totalUsdValue += usdValue / (10**vault.decimals());
       }
@@ -145,5 +145,12 @@ contract VaultManager is IVaultManager {
         );
         vault.mint(address(uint160(from)), shares.mulWadDown(1 + sharesBonus));
       }
+  }
+
+  /*//////////////////////////////////////////////////////////////
+                        HELPERS
+  //////////////////////////////////////////////////////////////*/
+  function getVaultsCount(uint id) external view returns (uint) {
+    return vaults[id].length;
   }
 }
