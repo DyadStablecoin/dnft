@@ -78,7 +78,6 @@ contract VaultManager is IVaultManager {
   function collatRatio(
       uint id
   ) public 
-    view 
     returns (uint) {
       uint totalUsdValue = getVaultsUsdValue(id);
       uint _dyad = dyad.mintedDyad(msg.sender, id); // save gas
@@ -89,7 +88,6 @@ contract VaultManager is IVaultManager {
   function getVaultsUsdValue(
       uint id
   ) public 
-    view 
     returns (uint) {
       uint totalUsdValue;
       uint numberOfVaults = vaults[id].length;
