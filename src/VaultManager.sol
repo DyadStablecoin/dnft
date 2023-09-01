@@ -11,12 +11,13 @@ import {Dyad} from "./Dyad.sol";
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 
+// TODO: refactor
 interface IVault {
   function collatPrice() external view returns (uint);
   function decimals()    external view returns (uint);
   function balanceOf(address account) external view returns (uint);
   function mint(address to, uint amount) external returns (bool);
-  function withdraw(uint assets, address receiver, address owner) external returns (uint);
+  function withdraw(uint id, uint assets, address receiver) external returns (uint);
   function move(uint from, uint to, uint amount) external returns (bool);
   function convertToAssets(uint shares) external returns (uint);
 }
@@ -110,15 +111,16 @@ contract VaultManager is IVaultManager {
   }
 
   function redeemDyad(
-      IVault  vault,
+      address vault,
       uint    from, 
       address to, 
       uint    amount
   ) external {
       if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
+      IVault _vault = IVault(vault);
       dyad.burn(from, msg.sender, amount);
-      uint collat = amount * (10**vault.decimals()) / vault.collatPrice();
-      vault.withdraw(collat, to, address(uint160(from)));
+      uint collat = amount * (10**_vault.decimals()) / _vault.collatPrice();
+      _vault.withdraw(from, collat, to);
   }
 
   function liquidate(

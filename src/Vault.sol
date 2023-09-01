@@ -106,24 +106,31 @@ contract Vault is IVault, AccessControl, ERC4626 {
   }
 
   function withdraw(uint id, uint assets, address receiver) public returns (uint) { 
-    if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-    return super.withdraw(assets, receiver, address(uint160(id)));
+    if (dNft.ownerOf(id) != msg.sender && address(vaultManager) != msg.sender) {
+      revert NotOwner();
+    }
+    address owner = address(uint160(id));
+    uint shares = previewWithdraw(assets); 
+    beforeWithdraw(assets, shares);
+    _burn(owner, shares);
+    emit Withdraw(msg.sender, receiver, owner, assets, shares);
+    asset.safeTransfer(receiver, assets);
   }
 
+  // TODO: has to be vault manager
   function redeem(uint id, uint shares, address receiver) public returns (uint) {
-    if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
     return super.redeem(shares, receiver, address(uint160(id)));
   }
 
   /*//////////////////////////////////////////////////////////////
        INHERITED ERC4626 FUNCTIONS ARE NOT DIRECTLY CALLABLE
   //////////////////////////////////////////////////////////////*/
-  function deposit(
-      uint    assets,
-      address receiver
-  ) public override pure returns (uint shares) {
-      revert NotSupported();
-  }
+  // function deposit(
+  //     uint    assets,
+  //     address receiver
+  // ) public override pure returns (uint shares) {
+  //     revert NotSupported();
+  // }
 
   function mint(
       uint    shares,
@@ -132,13 +139,13 @@ contract Vault is IVault, AccessControl, ERC4626 {
       revert NotSupported();
   }
 
-  function withdraw(
-      uint    assets,
-      address receiver,
-      address owner
-  ) public override pure returns (uint shares) {
-      revert NotSupported();
-  }
+  // function withdraw(
+  //     uint    assets,
+  //     address receiver,
+  //     address owner
+  // ) public override pure returns (uint shares) {
+  //     revert NotSupported();
+  // }
 
   function redeem(
       uint    shares,
