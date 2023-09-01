@@ -14,7 +14,7 @@ import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 interface IVault {
   function collatPrice() external view returns (uint);
   function decimals()    external view returns (uint);
-  function balanceOf(address id) external view returns (uint);
+  function balanceOf(address account) external view returns (uint);
   function mint(address to, uint amount) external returns (bool);
   function withdraw(uint assets, address receiver, address owner) external returns (uint);
   function move(uint from, uint to, uint amount) external returns (bool);
@@ -77,7 +77,7 @@ contract VaultManager is IVaultManager {
   ) public 
     returns (uint) {
       uint totalUsdValue = getVaultsUsdValue(id);
-      uint _dyad = dyad.mintedDyad(msg.sender, id); // save gas
+      uint _dyad = dyad.mintedDyad(address(this), id); // save gas
       if (_dyad == 0) return type(uint).max;
       return totalUsdValue.divWadDown(_dyad);
   }
@@ -93,6 +93,7 @@ contract VaultManager is IVaultManager {
         uint usdValue;
         if (sll.isLicensed(address(vault))) {
           usdValue = vault.convertToAssets(vault.balanceOf(address(uint160(id)))) * vault.collatPrice();
+          console.log("usdValue", usdValue);
         }
         totalUsdValue += usdValue / (10**vault.decimals());
       }
@@ -105,8 +106,9 @@ contract VaultManager is IVaultManager {
       uint    amount 
   ) external {
       if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
-      if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
+      console.log("collatRatio2", collatRatio(from));
       dyad.mint(from, to, amount);
+      if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
   }
 
   function redeemDyad(
@@ -133,7 +135,7 @@ contract VaultManager is IVaultManager {
       uint numberOfVaults = vaults[from].length;
       for (uint i = 0; i < numberOfVaults; i++) {
         IVault vault = IVault(vaults[from][i]);
-        uint shares = vault.balanceOf(from);
+        uint shares = vault.balanceOf(address(uint160(from)));
         vault.move(
           from,
           to,

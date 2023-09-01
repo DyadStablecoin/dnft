@@ -117,7 +117,10 @@ contract VaultManagerTest is Test {
     token.mint(address(this), 10e32);
     token.approve(address(vault), 10e32);
     vault.deposit(id, 10e18);
-    console.log(vaultManager.collatRatio(id));
+    vaultManagerSLL.vote(id, address(vaultManager));
+    vaultManagerSLL.license(address(vaultManager));
+    vaultManager.mintDyad(id, address(this), 1e10);
+    console.log("collatRatio", vaultManager.collatRatio(id));
   }
 
   ///////////////////////////
