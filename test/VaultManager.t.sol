@@ -7,8 +7,14 @@ import "forge-std/Test.sol";
 import { VaultManager } from "../src/VaultManager.sol";
 import { VaultManagerSLL } from "../src/VaultManagerSLL.sol";
 import { VaultSLL } from "../src/VaultSLL.sol";
+import { Vault } from "../src/Vault.sol";
 import { Dyad } from "../src/Dyad.sol";
 import { DNft } from "../src/DNft.sol";
+import { Staking } from "../src/Staking.sol";
+
+import { OracleMock } from "./utils/OracleMock.sol";
+import { ERC20Mock } from "./utils/ERC20Mock.sol";
+import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 
 contract VaultManagerTest is Test {
   DNft            dNft;
@@ -16,17 +22,35 @@ contract VaultManagerTest is Test {
   VaultManager    vaultManager;
   VaultManagerSLL vaultManagerSLL;
   VaultSLL        vaultSLL;
+  Staking         staking;
+
+  OracleMock      oracle;
+  ERC20Mock       erc20;
   
   address constant RANDOM_VAULT_1 = address(42);
   address constant RANDOM_VAULT_2 = address(314159);
   address constant RANDOM_VAULT_3 = address(69);
+
+  Vault vault;
   
   function setUp() public {
     dNft = new DNft();
     vaultSLL = new VaultSLL(dNft);
     vaultManagerSLL  = new VaultManagerSLL(dNft);
     dyad = new Dyad(vaultManagerSLL);
+    oracle = new OracleMock();
+    erc20 = new ERC20Mock();
     vaultManager = new VaultManager(dNft, vaultSLL, dyad);
+    staking = new Staking(dNft);
+    vault = new Vault(
+      dNft,
+      vaultManager,
+      oracle,
+      staking, 
+      ERC20(address(erc20)), 
+      erc20.name(),
+      erc20.symbol()
+    );
   }
 
   function add(uint id, address vault) public {
@@ -89,7 +113,7 @@ contract VaultManagerTest is Test {
   // collatRatio
   function test_collatRatio() public {
     uint id = dNft.mintNft{value: 1 ether}(address(this));
-    add(id, RANDOM_VAULT_1);
+    add(id, address(vault));
   }
 
   ///////////////////////////
