@@ -121,14 +121,14 @@ contract Vault is IVault, AccessControl, ERC4626 {
   function deposit(
       uint    assets,
       address receiver
-  ) public override returns (uint shares) {
+  ) public override pure returns (uint shares) {
       revert NotSupported();
   }
 
   function mint(
       uint    shares,
       address receiver
-  ) public override returns (uint assets) {
+  ) public override pure returns (uint assets) {
       revert NotSupported();
   }
 
@@ -136,16 +136,16 @@ contract Vault is IVault, AccessControl, ERC4626 {
       uint    assets,
       address receiver,
       address owner
-  ) public override returns (uint shares) {
-    revert NotSupported();
+  ) public override pure returns (uint shares) {
+      revert NotSupported();
   }
 
   function redeem(
       uint    shares,
       address receiver,
       address owner
-  ) public override returns (uint assets) {
-    revert NotSupported();
+  ) public override pure returns (uint assets) {
+      revert NotSupported();
   }
 
   /*//////////////////////////////////////////////////////////////

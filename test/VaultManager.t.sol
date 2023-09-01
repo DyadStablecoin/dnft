@@ -120,12 +120,22 @@ contract VaultManagerTest is Test {
     vaultManagerSLL.vote(id, address(vaultManager));
     vaultManagerSLL.license(address(vaultManager));
     vaultManager.mintDyad(id, address(this), 1e10);
+    assertTrue(vaultManager.collatRatio(id) != type(uint).max);
   }
 
   ///////////////////////////
   // mintDyad
   function test_mintDyad() public {
-
+    uint id = dNft.mintNft{value: 1 ether}(address(this));
+    addVault(id, address(vault));
+    token.mint(address(this), 10e32);
+    token.approve(address(vault), 10e32);
+    vault.deposit(id, 10e18);
+    vaultManagerSLL.vote(id, address(vaultManager));
+    vaultManagerSLL.license(address(vaultManager));
+    vaultManager.mintDyad(id, address(this), 1e10);
+    assertEq(dyad.balanceOf(address(this)), 1e10);
+    assertEq(dyad.mintedDyad(address(vaultManager), id), 1e10);
   }
 
   ///////////////////////////
