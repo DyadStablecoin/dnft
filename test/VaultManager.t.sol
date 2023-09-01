@@ -53,7 +53,7 @@ contract VaultManagerTest is Test {
     );
   }
 
-  function add(uint id, address vault) public {
+  function addVault(uint id, address vault) public {
     vaultSLL.vote(id, vault);
     vaultSLL.license(vault);
     vaultManager.add(id, vault);
@@ -63,7 +63,7 @@ contract VaultManagerTest is Test {
   // add
   function test_add() public {
     uint id = dNft.mintNft{value: 1 ether}(address(this));
-    add(id, RANDOM_VAULT_1);
+    addVault(id, RANDOM_VAULT_1);
     assertEq(vaultManager.isDNftVault(id, RANDOM_VAULT_1), true);
     assertEq(vaultManager.vaults(id, 0), RANDOM_VAULT_1);
     assertEq(vaultManager.getVaultsCount(id), 1);
@@ -73,8 +73,8 @@ contract VaultManagerTest is Test {
 
   function test_addTwoVaults() public {
     uint id = dNft.mintNft{value: 1 ether}(address(this));
-    add(id, RANDOM_VAULT_1);
-    add(id, RANDOM_VAULT_2);
+    addVault(id, RANDOM_VAULT_1);
+    addVault(id, RANDOM_VAULT_2);
     assertEq(vaultManager.isDNftVault(id, RANDOM_VAULT_1), true);
     assertEq(vaultManager.isDNftVault(id, RANDOM_VAULT_2), true);
     assertEq(vaultManager.vaults(id, 0), RANDOM_VAULT_1);
@@ -88,7 +88,7 @@ contract VaultManagerTest is Test {
   // remove
   function test_remove() public {
     uint id = dNft.mintNft{value: 1 ether}(address(this));
-    add(id, RANDOM_VAULT_1);
+    addVault(id, RANDOM_VAULT_1);
     vaultManager.remove(id, 0);
     assertEq(vaultManager.isDNftVault(id, RANDOM_VAULT_1), false);
     assertEq(vaultManager.getVaultsCount(id), 0);
@@ -98,9 +98,9 @@ contract VaultManagerTest is Test {
 
   function test_removeThreeVaults() public {
     uint id = dNft.mintNft{value: 1 ether}(address(this));
-    add(id, RANDOM_VAULT_1);
-    add(id, RANDOM_VAULT_2);
-    add(id, RANDOM_VAULT_3);
+    addVault(id, RANDOM_VAULT_1);
+    addVault(id, RANDOM_VAULT_2);
+    addVault(id, RANDOM_VAULT_3);
     vaultManager.remove(id, 0);
     assertEq(vaultManager.getVaultsCount(id), 2);
     vaultManager.remove(id, 0);
@@ -113,14 +113,19 @@ contract VaultManagerTest is Test {
   // collatRatio
   function test_collatRatio() public {
     uint id = dNft.mintNft{value: 1 ether}(address(this));
-    add(id, address(vault));
+    addVault(id, address(vault));
     token.mint(address(this), 10e32);
     token.approve(address(vault), 10e32);
     vault.deposit(id, 10e18);
     vaultManagerSLL.vote(id, address(vaultManager));
     vaultManagerSLL.license(address(vaultManager));
     vaultManager.mintDyad(id, address(this), 1e10);
-    console.log("collatRatio", vaultManager.collatRatio(id));
+  }
+
+  ///////////////////////////
+  // mintDyad
+  function test_mintDyad() public {
+
   }
 
   ///////////////////////////

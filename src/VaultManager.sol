@@ -93,7 +93,6 @@ contract VaultManager is IVaultManager {
         uint usdValue;
         if (sll.isLicensed(address(vault))) {
           usdValue = vault.convertToAssets(vault.balanceOf(address(uint160(id)))) * vault.collatPrice();
-          console.log("usdValue", usdValue);
         }
         totalUsdValue += usdValue / (10**vault.decimals());
       }
@@ -106,7 +105,6 @@ contract VaultManager is IVaultManager {
       uint    amount 
   ) external {
       if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
-      console.log("collatRatio2", collatRatio(from));
       dyad.mint(from, to, amount);
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
   }
