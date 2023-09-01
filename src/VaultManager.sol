@@ -14,7 +14,7 @@ import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 interface IVault {
   function collatPrice() external view returns (uint);
   function decimals()    external view returns (uint);
-  function balanceOf(uint id) external view returns (uint);
+  function balanceOf(address id) external view returns (uint);
   function mint(address to, uint amount) external returns (bool);
   function withdraw(uint assets, address receiver, address owner) external returns (uint);
   function move(uint from, uint to, uint amount) external returns (bool);
@@ -92,7 +92,7 @@ contract VaultManager is IVaultManager {
         IVault vault = IVault(vaults[id][i]);
         uint usdValue;
         if (sll.isLicensed(address(vault))) {
-          uint usdValue = vault.convertToAssets(vault.balanceOf(id)) * vault.collatPrice();
+          usdValue = vault.convertToAssets(vault.balanceOf(address(uint160(id)))) * vault.collatPrice();
         }
         totalUsdValue += usdValue / (10**vault.decimals());
       }
