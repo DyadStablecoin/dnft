@@ -25,7 +25,7 @@ contract VaultManagerTest is Test {
   Staking         staking;
 
   OracleMock      oracle;
-  ERC20Mock       erc20;
+  ERC20Mock       token;
   
   address constant RANDOM_VAULT_1 = address(42);
   address constant RANDOM_VAULT_2 = address(314159);
@@ -39,7 +39,7 @@ contract VaultManagerTest is Test {
     vaultManagerSLL  = new VaultManagerSLL(dNft);
     dyad = new Dyad(vaultManagerSLL);
     oracle = new OracleMock();
-    erc20 = new ERC20Mock();
+    token = new ERC20Mock();
     vaultManager = new VaultManager(dNft, vaultSLL, dyad);
     staking = new Staking(dNft);
     vault = new Vault(
@@ -47,9 +47,9 @@ contract VaultManagerTest is Test {
       vaultManager,
       oracle,
       staking, 
-      ERC20(address(erc20)), 
-      erc20.name(),
-      erc20.symbol()
+      ERC20(address(token)), 
+      token.name(),
+      token.symbol()
     );
   }
 
@@ -114,6 +114,9 @@ contract VaultManagerTest is Test {
   function test_collatRatio() public {
     uint id = dNft.mintNft{value: 1 ether}(address(this));
     add(id, address(vault));
+    token.mint(address(this), 10e32);
+    token.approve(address(vault), 10e32);
+    vault.deposit(id, 10e18);
   }
 
   ///////////////////////////
