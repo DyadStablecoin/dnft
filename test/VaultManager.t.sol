@@ -144,23 +144,16 @@ contract VaultManagerTest is Test {
     uint id = dNft.mintNft{value: 1 ether}(address(this));
     addVault(id, address(vault));
     token.mint(address(this), 10e32);
+    vaultManagerSLL.vote(id, address(vaultManager));
+    vaultManagerSLL.license(address(vaultManager));
     token.approve(address(vault), 10e32);
-    // vault.deposit(10e18, address(this));
-    // vault.withdraw(10e18, address(this), address(this));
-    // console.log("balance of shares", vault.balanceOf(address(uint160(id))));
-    // vault.approve(address(vault), type(uint).max);
-    // vault.redeem(id, vault.balanceOf(address(uint160(id))), address(1));
-
     vault.deposit(id, 10e18);
-    vault.withdraw(id, 10e18, address(1));
-
-    // vault.asset().approve(address(vault), type(uint256).max);
-    // token.approve(address(vault), 10e32);
-    // vault.withdraw(id, 10e18, address(1));
-    // vaultManagerSLL.vote(id, address(vaultManager));
-    // vaultManagerSLL.license(address(vaultManager));
-    // vaultManager.mintDyad(id, address(this), 1e10);
-    // vaultManager.redeemDyad(address(vault), id, address(this), 1);
+    uint oldBalance = vault.balanceOf(address(uint160(id)));
+    assertTrue(oldBalance != 0);
+    vaultManager.mintDyad(id, address(this), 1e10);
+    vaultManager.redeemDyad(address(vault), id, address(this), 60);
+    uint newBalance = vault.balanceOf(address(uint160(id)));
+    assertTrue(newBalance < oldBalance);
   }
 
   ///////////////////////////

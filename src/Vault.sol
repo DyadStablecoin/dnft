@@ -117,9 +117,17 @@ contract Vault is IVault, AccessControl, ERC4626 {
     asset.safeTransfer(receiver, assets);
   }
 
-  // TODO: has to be vault manager
   function redeem(uint id, uint shares, address receiver) public returns (uint) {
-    return super.redeem(shares, receiver, address(uint160(id)));
+    if (dNft.ownerOf(id) != msg.sender && address(vaultManager) != msg.sender) {
+      revert NotOwner();
+    }
+    address owner = address(uint160(id));
+    uint assets = previewRedeem(shares);
+    require(assets != 0, "ZERO_ASSETS");
+    beforeWithdraw(assets, shares);
+    _burn(owner, shares);
+    emit Withdraw(msg.sender, receiver, owner, assets, shares);
+    asset.safeTransfer(receiver, assets);
   }
 
   /*//////////////////////////////////////////////////////////////
