@@ -57,7 +57,7 @@ contract Vault is IVault, AccessControl, ERC4626 {
       uint    amount
   ) external {
       if (!hasRole(MINTER_ROLE, msg.sender)) revert NotMinter();
-      super._mint(to, amount);
+      _mint(to, amount);
   }
 
   // collateral price in USD
@@ -90,6 +90,26 @@ contract Vault is IVault, AccessControl, ERC4626 {
         address(uint160(to)),
         amount
       );
+  }
+
+  function transferFrom(
+      address from,
+      address to,
+      uint256 amount
+  ) public override returns (bool) {
+      if (!hasRole(TRANSFER_ROLE, msg.sender)) revert NotTransferer();
+
+      balanceOf[from] -= amount;
+
+      // Cannot overflow because the sum of all user
+      // balances can't exceed the max uint256 value.
+      unchecked {
+          balanceOf[to] += amount;
+      }
+
+      emit Transfer(from, to, amount);
+
+      return true;
   }
 
   /*//////////////////////////////////////////////////////////////
@@ -186,16 +206,16 @@ contract Vault is IVault, AccessControl, ERC4626 {
       revert NotTransferable();
   }
 
-  function transferFrom(
-    address from,
-    address to,
-    uint    amount
-  ) 
-    public 
-    override 
-    returns (bool) {
-      revert NotTransferable();
-  }
+  // function transferFrom(
+  //   address from,
+  //   address to,
+  //   uint    amount
+  // ) 
+  //   public 
+  //   override 
+  //   returns (bool) {
+  //     revert NotTransferable();
+  // }
 
   function permit(
     address owner,

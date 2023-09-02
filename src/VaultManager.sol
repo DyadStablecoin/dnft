@@ -16,9 +16,9 @@ interface IVault {
   function collatPrice() external view returns (uint);
   function decimals()    external view returns (uint);
   function balanceOf(address account) external view returns (uint);
-  function mint(address to, uint amount) external returns (bool);
+  function mint(address to, uint amount) external;
   function withdraw(uint id, uint assets, address receiver) external returns (uint);
-  function move(uint from, uint to, uint amount) external returns (bool);
+  function transferFrom(address from, address to, uint amount) external returns (bool);
   function convertToAssets(uint shares) external returns (uint);
 }
 
@@ -144,12 +144,12 @@ contract VaultManager is IVaultManager {
       for (uint i = 0; i < numberOfVaults; i++) {
         IVault vault = IVault(vaults[from][i]);
         uint shares = vault.balanceOf(address(uint160(from)));
-        // vault.move(
-        //   from,
-        //   to,
-        //   shares
-        // );
-        // vault.mint(address(uint160(from)), shares.mulWadDown(1e18 + sharesBonus));
+        vault.transferFrom(
+          address(uint160(from)),
+          address(uint160(to)),
+          shares
+        );
+        vault.mint(address(uint160(from)), shares.mulWadDown(1e18 + sharesBonus));
       }
   }
 
