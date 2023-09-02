@@ -127,22 +127,26 @@ contract VaultManager is IVaultManager {
       uint from, 
       uint to 
   ) external {
-      if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CR_NotLowEnough();
+      console.log("CR", collatRatio(from));
+      if (collatRatio(from) >= MIN_COLLATERIZATION_RATIO) revert CR_NotLowEnough();
       uint mintedDyad = dyad.mintedDyad(msg.sender, from);
       dyad.burn(from, msg.sender, mintedDyad);
-      uint totalUsdValue = getVaultsUsdValue(from);
-      uint sharesBonus   = mintedDyad.divWadDown(totalUsdValue) - uint(2).divWadDown(3);
-      uint numberOfVaults = vaults[from].length;
-      for (uint i = 0; i < numberOfVaults; i++) {
-        IVault vault = IVault(vaults[from][i]);
-        uint shares = vault.balanceOf(address(uint160(from)));
-        vault.move(
-          from,
-          to,
-          shares
-        );
-        vault.mint(address(uint160(from)), shares.mulWadDown(1 + sharesBonus));
-      }
+
+      // // TODO: refactor so we don't re-calculate getVaultsUsdValue
+      // uint totalUsdValue = getVaultsUsdValue(from);
+
+      // uint sharesBonus   = mintedDyad.divWadDown(totalUsdValue) - uint(2).divWadDown(3);
+      // uint numberOfVaults = vaults[from].length;
+      // for (uint i = 0; i < numberOfVaults; i++) {
+      //   IVault vault = IVault(vaults[from][i]);
+      //   uint shares = vault.balanceOf(address(uint160(from)));
+      //   vault.move(
+      //     from,
+      //     to,
+      //     shares
+      //   );
+      //   vault.mint(address(uint160(from)), shares.mulWadDown(1 + sharesBonus));
+      // }
   }
 
   /*//////////////////////////////////////////////////////////////

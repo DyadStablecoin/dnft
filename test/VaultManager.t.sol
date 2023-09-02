@@ -125,8 +125,7 @@ contract VaultManagerTest is Test {
 
   ///////////////////////////
   // mintDyad
-  function test_mintDyad() public {
-    uint id = dNft.mintNft{value: 1 ether}(address(this));
+  function mintDyad(uint id, Vault vault, uint amount) public {
     addVault(id, address(vault));
     token.mint(address(this), 10e32);
     token.approve(address(vault), 10e32);
@@ -134,6 +133,11 @@ contract VaultManagerTest is Test {
     vaultManagerSLL.vote(id, address(vaultManager));
     vaultManagerSLL.license(address(vaultManager));
     vaultManager.mintDyad(id, address(this), 1e10);
+  }
+
+  function test_mintDyad() public {
+    uint id = dNft.mintNft{value: 1 ether}(address(this));
+    mintDyad(id, vault, 0);
     assertEq(dyad.balanceOf(address(this)), 1e10);
     assertEq(dyad.mintedDyad(address(vaultManager), id), 1e10);
   }
@@ -142,18 +146,29 @@ contract VaultManagerTest is Test {
   // redeemDyad
   function test_redeemDyad() public {
     uint id = dNft.mintNft{value: 1 ether}(address(this));
-    addVault(id, address(vault));
-    token.mint(address(this), 10e32);
-    vaultManagerSLL.vote(id, address(vaultManager));
-    vaultManagerSLL.license(address(vaultManager));
-    token.approve(address(vault), 10e32);
-    vault.deposit(id, 10e18);
+
+    mintDyad(id, vault, 1e10);
     uint oldBalance = vault.balanceOf(address(uint160(id)));
     assertTrue(oldBalance != 0);
-    vaultManager.mintDyad(id, address(this), 1e10);
+
     vaultManager.redeemDyad(address(vault), id, address(this), 60);
     uint newBalance = vault.balanceOf(address(uint160(id)));
     assertTrue(newBalance < oldBalance);
+  }
+
+  ///////////////////////////
+  // liquidate
+  function test_liquidate() public {
+    uint id  = dNft.mintNft{value: 1 ether}(address(this));
+    // uint id2 = dNft.mintNft{value: 1 ether}(address(this));
+    mintDyad(id, vault, 1e10);
+    // console.log("CR", vaultManager.collatRatio(id));
+    console.log();
+    console.log("liquidate");
+    oracle.setPrice(20); // forces the CR to go under the threshold
+    vaultManager.liquidate(id, 999);
+    console.log("liquidate");
+    console.log();
   }
 
   ///////////////////////////
