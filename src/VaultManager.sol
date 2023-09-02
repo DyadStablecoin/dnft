@@ -129,7 +129,6 @@ contract VaultManager is IVaultManager {
       uint from, 
       uint to 
   ) external {
-      console.log("CR", collatRatio(from));
       if (collatRatio(from) >= MIN_COLLATERIZATION_RATIO) revert CR_NotLowEnough();
       uint mintedDyad = dyad.mintedDyad(address(this), from);
       dyad.burn(from, msg.sender, mintedDyad);
@@ -137,11 +136,7 @@ contract VaultManager is IVaultManager {
       // TODO: refactor so we don't re-calculate getVaultsUsdValue
       uint totalUsdValue = getVaultsUsdValue(from);
 
-      console.log("totalUsdValue", totalUsdValue);
-      console.log("mintedDyad", mintedDyad);
-      console.log("vvvvvvvvvvvvvvvvvv", mintedDyad.divWadDown(totalUsdValue));
       uint sharesBonus   = mintedDyad.divWadDown(totalUsdValue) - 66e16;
-      console.log("sharesBonus", sharesBonus);
       uint numberOfVaults = vaults[from].length;
       for (uint i = 0; i < numberOfVaults; i++) {
         IVault vault = IVault(vaults[from][i]);

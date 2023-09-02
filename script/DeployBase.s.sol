@@ -10,38 +10,38 @@ import { Vault } from "../src/Vault.sol";
 import { Dyad } from "../src/Dyad.sol";
 import { DNft } from "../src/DNft.sol";
 import { Staking } from "../src/Staking.sol";
+import {Parameters} from "../src/Parameters.sol";
+import {IAggregatorV3} from "../src/interfaces/IAggregatorV3.sol";
+
+import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 
 contract DeployBase is Script {
   function deploy(
-      // address       _owner,
-      // address       _collat,
-      // string memory _collatSymbol, 
-      // address       _collatOracle
+      DNft          _dNft, 
+      IAggregatorV3 _oracle,
+      ERC20         _collateral
   )
     public 
     payable 
      {
       vm.startBroadcast();
 
-      // ZoraMock     zora    = new ZoraMock();
-      // DNft         dNft    = new DNft(ERC721(zora));
-      // VaultFactory factory = new VaultFactory(dNft);
-      // dNft.setFactory(address(factory));
-      // dNft.transferOwnership(address(_owner));
+      VaultManagerSLL vaultManagerSLL = new VaultManagerSLL(_dNft);
+      VaultSLL        vaultSLL        = new VaultSLL(_dNft);
+      Dyad            dyad            = new Dyad(vaultManagerSLL);
+      VaultManager    vaultManager    = new VaultManager(_dNft, vaultSLL, dyad);
+      Staking         staking         = new Staking(_dNft);
+      Vault           vault           = new Vault(
+                                        _dNft,
+                                        vaultManager,
+                                        _oracle,
+                                        staking, 
+                                        _collateral, 
+                                        "Wrapped Ether",
+                                        "WETH"
+                                      );
 
-      // address vault = factory.deploy(
-      //   _collat,
-      //   _collatSymbol, 
-      //   _collatOracle 
-      // );
 
       vm.stopBroadcast();
-      // return (
-        // address(dNft),
-        // address(Vault(vault).dyad()),
-        // address(vault),
-        // address(factory), 
-        // address(zora)
-      // );
   }
 }
