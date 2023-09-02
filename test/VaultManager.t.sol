@@ -162,10 +162,11 @@ contract VaultManagerTest is Test {
     uint id  = dNft.mintNft{value: 1 ether}(address(this));
     // uint id2 = dNft.mintNft{value: 1 ether}(address(this));
     mintDyad(id, vault, 1e10);
+    console.log("minted dyad", dyad.mintedDyad(address(vaultManager), id));
     // console.log("CR", vaultManager.collatRatio(id));
     console.log();
     console.log("liquidate");
-    oracle.setPrice(20); // forces the CR to go under the threshold
+    oracle.setPrice(10e8); // forces the CR to go under the threshold
     vaultManager.liquidate(id, 999);
     console.log("liquidate");
     console.log();
