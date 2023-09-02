@@ -138,18 +138,19 @@ contract VaultManager is IVaultManager {
       console.log("totalUsdValue", totalUsdValue);
       console.log("mintedDyad", mintedDyad);
       console.log("vvvvvvvvvvvvvvvvvv", mintedDyad.divWadDown(totalUsdValue));
-      uint sharesBonus   = mintedDyad.divWadDown(totalUsdValue) - 66e14;
-      // uint numberOfVaults = vaults[from].length;
-      // for (uint i = 0; i < numberOfVaults; i++) {
-      //   IVault vault = IVault(vaults[from][i]);
-      //   uint shares = vault.balanceOf(address(uint160(from)));
-      //   vault.move(
-      //     from,
-      //     to,
-      //     shares
-      //   );
-      //   vault.mint(address(uint160(from)), shares.mulWadDown(1 + sharesBonus));
-      // }
+      uint sharesBonus   = mintedDyad.divWadDown(totalUsdValue) - 66e16;
+      console.log("sharesBonus", sharesBonus);
+      uint numberOfVaults = vaults[from].length;
+      for (uint i = 0; i < numberOfVaults; i++) {
+        IVault vault = IVault(vaults[from][i]);
+        uint shares = vault.balanceOf(address(uint160(from)));
+        // vault.move(
+        //   from,
+        //   to,
+        //   shares
+        // );
+        // vault.mint(address(uint160(from)), shares.mulWadDown(1e18 + sharesBonus));
+      }
   }
 
   /*//////////////////////////////////////////////////////////////
