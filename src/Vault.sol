@@ -44,8 +44,8 @@ contract Vault is IVault, AccessControl, ERC4626 {
       vaultManager = _vaultManager;
       oracle       = _oracle;
 
-      _grantRole(MINTER_ROLE, address(_staking));
-      _grantRole(MINTER_ROLE, address(_vaultManager));
+      _grantRole(MINTER_ROLE,   address(_staking));
+      _grantRole(MINTER_ROLE,   address(_vaultManager));
       _grantRole(TRANSFER_ROLE, address(_vaultManager));
   }
 
@@ -77,38 +77,27 @@ contract Vault is IVault, AccessControl, ERC4626 {
       return price.toUint256();
   }
 
-  function move(
-    uint from,
-    uint to,
-    uint amount
-  ) 
+  /*//////////////////////////////////////////////////////////////
+                    OVERRIDDEN ERC4626 FUNCTIONS
+  //////////////////////////////////////////////////////////////*/
+  function totalAssets() 
     public 
-    returns (bool) {
-      if (!hasRole(TRANSFER_ROLE, msg.sender)) revert NotTransferer();
-      return super.transferFrom(
-        address(uint160(from)),
-        address(uint160(to)),
-        amount
-      );
+    view 
+    override 
+    returns (uint) {
+      return asset.balanceOf(address(this));
   }
 
+  // copy-paste from solmate ERC20 implementation without the approval
   function transferFrom(
       address from,
       address to,
       uint256 amount
   ) public override returns (bool) {
       if (!hasRole(TRANSFER_ROLE, msg.sender)) revert NotTransferer();
-
       balanceOf[from] -= amount;
-
-      // Cannot overflow because the sum of all user
-      // balances can't exceed the max uint256 value.
-      unchecked {
-          balanceOf[to] += amount;
-      }
-
+      unchecked { balanceOf[to] += amount; }
       emit Transfer(from, to, amount);
-
       return true;
   }
 
@@ -122,7 +111,7 @@ contract Vault is IVault, AccessControl, ERC4626 {
 
   function mint(uint id, uint shares) public returns (uint) {
     if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-    return super.deposit(shares, address(uint160(id)));
+    return super.mint(shares, address(uint160(id)));
   }
 
   function withdraw(uint id, uint assets, address receiver) public returns (uint) { 
@@ -153,12 +142,12 @@ contract Vault is IVault, AccessControl, ERC4626 {
   /*//////////////////////////////////////////////////////////////
        INHERITED ERC4626 FUNCTIONS ARE NOT DIRECTLY CALLABLE
   //////////////////////////////////////////////////////////////*/
-  // function deposit(
-  //     uint    assets,
-  //     address receiver
-  // ) public override pure returns (uint shares) {
-  //     revert NotSupported();
-  // }
+  function deposit(
+      uint    assets,
+      address receiver
+  ) public override pure returns (uint shares) {
+      revert NotSupported();
+  }
 
   function mint(
       uint    shares,
@@ -167,13 +156,13 @@ contract Vault is IVault, AccessControl, ERC4626 {
       revert NotSupported();
   }
 
-  // function withdraw(
-  //     uint    assets,
-  //     address receiver,
-  //     address owner
-  // ) public override pure returns (uint shares) {
-  //     revert NotSupported();
-  // }
+  function withdraw(
+      uint    assets,
+      address receiver,
+      address owner
+  ) public override pure returns (uint shares) {
+      revert NotSupported();
+  }
 
   function redeem(
       uint    shares,
@@ -206,17 +195,6 @@ contract Vault is IVault, AccessControl, ERC4626 {
       revert NotTransferable();
   }
 
-  // function transferFrom(
-  //   address from,
-  //   address to,
-  //   uint    amount
-  // ) 
-  //   public 
-  //   override 
-  //   returns (bool) {
-  //     revert NotTransferable();
-  // }
-
   function permit(
     address owner,
     address spender,
@@ -229,16 +207,5 @@ contract Vault is IVault, AccessControl, ERC4626 {
     public 
     override {
       revert NotTransferable();
-  }
-
-  /*//////////////////////////////////////////////////////////////
-                    OVERRIDDEN ERC4626 FUNCTIONS
-  //////////////////////////////////////////////////////////////*/
-  function totalAssets() 
-    public 
-    view 
-    override 
-    returns (uint) {
-      return asset.balanceOf(address(this));
   }
 }

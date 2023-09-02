@@ -58,7 +58,7 @@ contract VaultManager is IVaultManager {
       emit Added(id, vault);
   }
 
-  // Does not respect the order of vaults
+  // NOTE: Changes the order of vaults!
   function remove(
       uint id,
       uint index
@@ -93,7 +93,9 @@ contract VaultManager is IVaultManager {
         IVault vault = IVault(vaults[id][i]);
         uint usdValue;
         if (sll.isLicensed(address(vault))) {
-          usdValue = vault.convertToAssets(vault.balanceOf(address(uint160(id)))) * vault.collatPrice();
+          // use shares to calculate usd value
+          uint shares = vault.balanceOf(address(uint160(id)));
+          usdValue = vault.convertToAssets(shares) * vault.collatPrice();
         }
         totalUsdValue += usdValue / (10**vault.decimals());
       }
