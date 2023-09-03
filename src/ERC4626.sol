@@ -6,7 +6,7 @@ import {SafeTransferLib} from "@solmate/src/utils/SafeTransferLib.sol";
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 
-abstract contract ERC4626 is ERC20NonTransferable {
+abstract contract ERC4626Custom is ERC20NonTransferable {
   using SafeTransferLib   for ERC20;
   using FixedPointMathLib for uint256;
 

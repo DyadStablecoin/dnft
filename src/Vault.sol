@@ -13,11 +13,9 @@ import {IAggregatorV3} from "./interfaces/IAggregatorV3.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {ERC4626} from "@solmate/src/mixins/ERC4626.sol";
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
-import {Owned} from "@solmate/src/auth/Owned.sol";
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 import {SafeTransferLib} from "@solmate/src/utils/SafeTransferLib.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import {SafeTransferLib} from "@solmate/src/utils/SafeTransferLib.sol";
 
 contract Vault is IVault, AccessControl, ERC4626 {
   using SafeCast          for int;
