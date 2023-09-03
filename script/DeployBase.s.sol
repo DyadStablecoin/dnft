@@ -37,8 +37,8 @@ contract DeployBase is Script {
                                         _oracle,
                                         staking, 
                                         _collateral, 
-                                        "Wrapped Ether",
-                                        "WETH"
+                                        "Wrapped Ether Shares",
+                                        "WETH Shares"
                                       );
 
 
