@@ -64,6 +64,11 @@ contract Staking is IStaking, Owned {
   function _updateReward(
       uint id
   ) internal {
+      // uint initialStakeSize;
+      // uint timeSinceLastUpdate;
+      // uint sizeOfLastUpdate;
+      // uint reward = initialStakeSize + (initialStakeSize * 0.01 * timeSinceLastUpdate) + sizeOfLastUpdate;
+
       uint reward = _calcReward(
           id, 
           balanceOf[id], 
