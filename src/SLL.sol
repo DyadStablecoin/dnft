@@ -7,7 +7,7 @@ import {DNft} from "./DNft.sol";
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 
 abstract contract SLL is ISLL {
-  using FixedPointMathLib for uint; 
+  using FixedPointMathLib for uint;
 
   DNft public immutable dNft;
 
@@ -36,6 +36,7 @@ abstract contract SLL is ISLL {
       if (hasVoted[id][vault])            revert VotedBefore(); 
       hasVoted[id][vault] = true;
       votes[vault]       += 1;
+      emit Voted(id, vault);
   }
 
   function removeVote(
@@ -46,6 +47,7 @@ abstract contract SLL is ISLL {
       if (!hasVoted[id][vault])           revert NotVotedBefore();
       hasVoted[id][vault] = false;
       votes[vault]       -= 1;
+      emit RemovedVote(id, vault);
   }
 
   function license(address vault) external {
@@ -53,6 +55,7 @@ abstract contract SLL is ISLL {
       revert NotEnoughVotes();
     }
     isLicensed[vault] = true;
+    emit Licensed(vault);
   }
 
   function removeLicense(address vault) external {
@@ -60,5 +63,6 @@ abstract contract SLL is ISLL {
       revert TooManyVotes();
     }
     isLicensed[vault] = false;
+    emit RemovedLicense(vault);
   }
 }
