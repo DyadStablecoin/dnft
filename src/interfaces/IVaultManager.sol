@@ -14,4 +14,5 @@ interface IVaultManager {
 
   event Added  (uint indexed id, address indexed vault);
   event Removed(uint indexed id, address indexed vault);
+  event Liquidation(uint indexed from, uint indexed to);
 }

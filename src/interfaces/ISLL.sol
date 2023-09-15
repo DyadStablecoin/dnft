@@ -12,6 +12,11 @@ interface ISLL {
   error NotLicensedToBurn();
   error NotVaultManager();
 
+  event Voted(uint indexed id, address indexed vault);
+  event RemovedVote(uint indexed id, address indexed vault);
+  event Licensed(address indexed vault);
+  event RemovedLicense(address indexed vault);
+
   // /**
   //  * @notice Vote for a vault to be licensed.
   //  * @param id The id of the DNft to vote for.
