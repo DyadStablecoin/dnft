@@ -19,8 +19,10 @@ contract AddVaults is Script {
   address vault           = 0xFaB3989658312862408eECCB6D815B95dC161ED0;
 
   function run() public {
-    uint id1 = dNft.mintNft{value: 0.102 ether}(address(this));
-    uint id2 = dNft.mintNft{value: 0.102 ether}(address(this));
+    vm.startBroadcast();
+
+    uint id1 = dNft.mintNft{value: 0.102 ether}(0xCdff3Ca9272928106f00940A2623f1Ea117e9117);
+    uint id2 = dNft.mintNft{value: 0.102 ether}(0xCdff3Ca9272928106f00940A2623f1Ea117e9117);
 
     address vaultManagerAddress = address(vaultManager);
 
@@ -31,6 +33,8 @@ contract AddVaults is Script {
     vaultSLL.vote(id1, vault);
     vaultSLL.vote(id2, vault);
     vaultSLL.license(vault);
+
+    vm.stopBroadcast();
   }
 
   receive() external payable {}
