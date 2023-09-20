@@ -12,7 +12,6 @@ import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 contract DeployGoerli is Script, Parameters {
   function run() public {
       new DeployBase().deploy(
-        DNft(GOERLI_DNFT),
         IAggregatorV3(GOERLI_ORACLE), 
         ERC20(GOERLI_WETH)
       );

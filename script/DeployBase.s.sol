@@ -17,7 +17,6 @@ import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 
 contract DeployBase is Script {
   function deploy(
-      DNft          _dNft, 
       IAggregatorV3 _oracle,
       ERC20         _collateral
   )
@@ -26,20 +25,21 @@ contract DeployBase is Script {
      {
       vm.startBroadcast();
 
-      VaultManagerSLL vaultManagerSLL = new VaultManagerSLL(_dNft);
-      VaultSLL        vaultSLL        = new VaultSLL(_dNft);
+      DNft            dNft            = new DNft();
+      VaultManagerSLL vaultManagerSLL = new VaultManagerSLL(dNft);
+      VaultSLL        vaultSLL        = new VaultSLL(dNft);
       Dyad            dyad            = new Dyad(vaultManagerSLL);
-      VaultManager    vaultManager    = new VaultManager(_dNft, vaultSLL, dyad);
-      Staking         staking         = new Staking(_dNft);
+      VaultManager    vaultManager    = new VaultManager(dNft, vaultSLL, dyad);
+      Staking         staking         = new Staking(dNft);
       Vault           vault           = new Vault(
-                                        _dNft,
-                                        vaultManager,
-                                        _oracle,
-                                        staking, 
-                                        _collateral, 
-                                        "Wrapped Ether Shares",
-                                        "WETH Shares"
-                                      );
+                                          dNft,
+                                          vaultManager,
+                                          _oracle,
+                                          staking, 
+                                          _collateral, 
+                                          "Wrapped Ether Shares",
+                                          "WETH Shares"
+                                        );
 
 
       vm.stopBroadcast();
