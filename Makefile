@@ -38,4 +38,4 @@ read:
 	forge script script/Read.s.sol --rpc-url $(GOERLI_RPC) --fork-block-number 8416091
 
 addVault:
-	forge script -vvvv script/AddVaults.s.sol --rpc-url $(GOERLI_RPC) --fork-block-number 9727461
+	forge script script/AddVaults.s.sol --fork-url $(GOERLI_RPC) --fork-block-number 9727815
