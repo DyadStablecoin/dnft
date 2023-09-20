@@ -21,8 +21,10 @@ contract AddVaults is Script {
   function run() public {
     vm.startBroadcast();
 
-    uint id1 = dNft.mintNft{value: 0.102 ether}(0xCdff3Ca9272928106f00940A2623f1Ea117e9117);
-    uint id2 = dNft.mintNft{value: 0.102 ether}(0xCdff3Ca9272928106f00940A2623f1Ea117e9117);
+    address pubKey = vm.envAddress("PUBLIC_KEY");
+
+    uint id1 = dNft.mintNft{value: 0.102 ether}(pubKey);
+    uint id2 = dNft.mintNft{value: 0.102 ether}(pubKey);
 
     address vaultManagerAddress = address(vaultManager);
 
