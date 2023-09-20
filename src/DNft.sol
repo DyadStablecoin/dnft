@@ -10,8 +10,10 @@ contract DNft is ERC721Enumerable, Owned, IDNft {
   using SafeTransferLib for address;
 
   uint public constant INSIDER_MINTS  = 4000;
-  uint public constant START_PRICE    = 0.1   ether;
-  uint public constant PRICE_INCREASE = 0.001 ether;
+  // uint public constant START_PRICE    = 0.1   ether;
+  uint public constant START_PRICE    = 0 ether;
+  // uint public constant PRICE_INCREASE = 0.001 ether;
+  uint public constant PRICE_INCREASE = 0 ether;
 
   uint public publicMints;  // Number of public mints
   uint public insiderMints; // Number of insider mints
