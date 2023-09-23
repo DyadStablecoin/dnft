@@ -18,6 +18,8 @@ abstract contract SLL is ISLL {
   mapping (uint    => mapping (address => bool)) public hasVoted; // dNft id => voted
   mapping (address => bool) public isLicensed; // vault => is licensed
 
+  bool public isInitialized; // use one-time to initialize one vault
+
   constructor(
     DNft _dNft, 
     uint licenseThreshold,
@@ -26,6 +28,12 @@ abstract contract SLL is ISLL {
     dNft = _dNft;
     LICENSE_THRESHOLD   = licenseThreshold;
     UNLICENSE_THRESHOLD = unlicenseThreshold;
+  }
+
+  function initialize(address vault) external {
+    require(!isInitialized, "SLL: already initialized");
+    isInitialized = true;
+    isLicensed[vault] = true;
   }
 
   function vote(

@@ -49,6 +49,8 @@ contract DeployBase is Script {
                                           "Wrapped Ether Shares",
                                           "WETH Shares"
                                         );
+      vaultManagerSLL.initialize(address(vaultManager));
+      vaultSLL.initialize(address(vault));
 
 
       vm.stopBroadcast();
