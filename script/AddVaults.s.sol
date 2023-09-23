@@ -10,7 +10,6 @@ import { Addresses } from "./Addresses.Goerli.sol";
 import "forge-std/Script.sol";
 
 contract AddVaults is Script, Addresses {
-  // on goerli
   DNft dNft                       = DNft(dNft_addr);
   VaultManagerSLL vaultManagerSLL = VaultManagerSLL(vaultManagerSLL_addr);
   VaultSLL vaultSLL               = VaultSLL(vaultSLL_addr);
