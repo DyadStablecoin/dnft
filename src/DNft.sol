@@ -5,7 +5,7 @@ import {ERC721, ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/ext
 import {SafeTransferLib} from "@solmate/src/utils/SafeTransferLib.sol";
 import {Owned} from "@solmate/src/auth/Owned.sol";
 import {IDNft} from "./interfaces/IDNft.sol";
-import {DNftParameters} from "./DNftParameters.sol";
+import {DNftParameters} from "./params/DNftParameters.sol";
 
 contract DNft is ERC721Enumerable, Owned, DNftParameters, IDNft {
   using SafeTransferLib for address;
