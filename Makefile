@@ -36,3 +36,9 @@ mdeploy:
 
 read:
 	forge script script/Read.s.sol --rpc-url $(GOERLI_RPC) --fork-block-number 8416091
+
+addVault:
+	forge script script/AddVaults.s.sol --fork-url $(GOERLI_RPC) --fork-block-number 9727815
+
+runAddVault:
+	forge script script/AddVaults.s.sol --rpc-url $(GOERLI_RPC) --sender $(PUBLIC_KEY) --broadcast -i 1 -vvvv

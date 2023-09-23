@@ -5,13 +5,10 @@ import {ERC721, ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/ext
 import {SafeTransferLib} from "@solmate/src/utils/SafeTransferLib.sol";
 import {Owned} from "@solmate/src/auth/Owned.sol";
 import {IDNft} from "./interfaces/IDNft.sol";
+import {DNftParameters} from "./params/DNftParameters.sol";
 
-contract DNft is ERC721Enumerable, Owned, IDNft {
+contract DNft is ERC721Enumerable, Owned, DNftParameters, IDNft {
   using SafeTransferLib for address;
-
-  uint public constant INSIDER_MINTS  = 4000;
-  uint public constant START_PRICE    = 0.1   ether;
-  uint public constant PRICE_INCREASE = 0.001 ether;
 
   uint public publicMints;  // Number of public mints
   uint public insiderMints; // Number of insider mints
