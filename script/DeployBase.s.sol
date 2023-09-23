@@ -35,7 +35,6 @@ contract DeployBase is Script {
         dNft = DNft(_dNft);
       }
 
-      DNft            dNft            = new DNft();
       VaultManagerSLL vaultManagerSLL = new VaultManagerSLL(dNft);
       VaultSLL        vaultSLL        = new VaultSLL(dNft);
       Dyad            dyad            = new Dyad(vaultManagerSLL);

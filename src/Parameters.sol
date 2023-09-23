@@ -3,6 +3,10 @@ pragma solidity =0.8.17;
 
 contract Parameters {
 
+  // ---------------- DNft ----------------
+  uint START_PRICE    = 0 ether;
+  uint PRICE_INCREASE = 0 ether;
+
   // ---------------- Goerli ----------------
   address GOERLI_DNFT = 0x8f49F321CB37A2313b7880A8A6495A8741Fdd23A;
   address GOERLI_ORACLE = 0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e;
