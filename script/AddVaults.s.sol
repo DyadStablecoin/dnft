@@ -5,18 +5,19 @@ import { DNft } from "../src/DNft.sol";
 import { VaultManager } from "../src/VaultManager.sol";
 import { VaultManagerSLL } from "../src/VaultManagerSLL.sol";
 import { VaultSLL } from "../src/VaultSLL.sol";
+import { Addresses } from "./Addresses.Goerli.sol";
 
 import "forge-std/Script.sol";
 
-contract AddVaults is Script {
+contract AddVaults is Script, Addresses {
   // on goerli
-  DNft dNft               = DNft(0x7B9B6CAAd6eE04E9173b49f33aB8a01E096cF258);
-  VaultManagerSLL vaultManagerSLL = VaultManagerSLL(0x0686d75307040EE0C86790D0a62b6c95e3E857C9);
-  VaultSLL vaultSLL        = VaultSLL(0x25B716D9dCc09842413161abF0F3ff336d165a87);
-  address dyad            = 0xf47D4F3F3Cd98d34e559eFe71B5aCcAb97E4560D;
-  VaultManager vaultManager = VaultManager(0x1C0c439abd9958b55eBF7Fa8030b5fc725ca21cb);
-  address staking         = 0x9D5Fd41ee4A4A09c3135936C7B1595D6b3A779d3;
-  address vault           = 0xFaB3989658312862408eECCB6D815B95dC161ED0;
+  DNft dNft                       = DNft(dNft_addr);
+  VaultManagerSLL vaultManagerSLL = VaultManagerSLL(vaultManagerSLL_addr);
+  VaultSLL vaultSLL               = VaultSLL(vaultSLL_addr);
+  address dyad                    = dyad_addr;
+  VaultManager vaultManager       = VaultManager(vaultManager_addr);
+  address staking                 = staking_addr;
+  address vault                   = vault_addr;
 
   function run() public {
     vm.startBroadcast();
