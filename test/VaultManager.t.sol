@@ -69,6 +69,8 @@ contract VaultManagerTest is Test {
     assertEq(vaultManager.getVaultsCount(id), 1);
     vm.expectRevert();
     assertEq(vaultManager.vaults(id, 1), address(0)); // out of bounds
+
+
   }
 
   function test_addTwoVaults() public {

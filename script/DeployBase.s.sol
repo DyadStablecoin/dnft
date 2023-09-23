@@ -18,12 +18,22 @@ import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 contract DeployBase is Script {
   function deploy(
       IAggregatorV3 _oracle,
-      ERC20         _collateral
+      ERC20         _collateral,
+      address       _dNft
   )
     public 
     payable 
      {
       vm.startBroadcast();
+
+      DNft dNft;
+
+      // we want to deploy a new dNft contract sometimes on a testnet
+      if (_dNft == address(0)) {
+        dNft = new DNft();
+      } else {
+        dNft = DNft(_dNft);
+      }
 
       DNft            dNft            = new DNft();
       VaultManagerSLL vaultManagerSLL = new VaultManagerSLL(dNft);

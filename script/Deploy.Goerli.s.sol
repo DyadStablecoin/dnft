@@ -13,7 +13,8 @@ contract DeployGoerli is Script, Parameters {
   function run() public {
       new DeployBase().deploy(
         IAggregatorV3(GOERLI_ORACLE), 
-        ERC20(GOERLI_WETH)
+        ERC20(GOERLI_WETH),
+        address(0) // deploy a new DNft contract
       );
   }
 }
