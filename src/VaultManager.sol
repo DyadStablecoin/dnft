@@ -115,7 +115,7 @@ contract VaultManager is IVaultManager {
       uint    amount 
   ) external {
       if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
-      dyad.burn(from, to, amount);
+      dyad.burn(from, msg.sender, amount);
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
   }
 
