@@ -3,6 +3,7 @@ pragma solidity =0.8.17;
 
 interface IVaultManager {
   error NotOwner();
+  error NotLicensed();
   error OnlyOwner();
   error VaultNotLicensed();
   error TooManyVaults();

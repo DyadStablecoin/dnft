@@ -24,7 +24,7 @@ contract VaultManager is IVaultManager {
   using FixedPointMathLib for uint;
 
   DNft      public immutable dNft;
-  VaultSLL  public immutable sll;
+  VaultSLL  public immutable vaultSLL;
   Dyad      public immutable dyad;
 
   uint public constant MAX_VAULTS = 5;
@@ -35,12 +35,12 @@ contract VaultManager is IVaultManager {
 
   constructor(
     DNft      _dNft,
-    VaultSLL  _sll,
+    VaultSLL  _vaultSLL,
     Dyad      _dyad
   ) {
-    dNft = _dNft;
-    sll  = _sll;
-    dyad = _dyad;
+    dNft      = _dNft;
+    vaultSLL  = _vaultSLL;
+    dyad      = _dyad;
   }
 
   /// @inheritdoc IVaultManager
@@ -50,7 +50,7 @@ contract VaultManager is IVaultManager {
   ) external {
       if (dNft.ownerOf(id)  != msg.sender) revert OnlyOwner(); 
       if (vaults[id].length >= MAX_VAULTS) revert TooManyVaults();
-      if (!sll.isLicensed(vault))          revert VaultNotLicensed();
+      if (!vaultSLL.isLicensed(vault))     revert VaultNotLicensed();
       if (isDNftVault[id][vault])          revert VaultAlreadyAdded();
       vaults[id].push(vault);
       isDNftVault[id][vault] = true;
@@ -93,7 +93,7 @@ contract VaultManager is IVaultManager {
       for (uint i = 0; i < numberOfVaults; i++) {
         IVault vault = IVault(vaults[id][i]);
         uint usdValue;
-        if (sll.isLicensed(address(vault))) {
+        if (vaultSLL.isLicensed(address(vault))) {
           // use shares to calculate usd value
           uint shares = vault.balanceOf(address(uint160(id)));
           usdValue = vault.convertToAssets(shares) * vault.collatPrice();
@@ -108,7 +108,7 @@ contract VaultManager is IVaultManager {
       address to,
       uint    amount 
   ) external {
-      if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
+      if (vaultSLL.isLicensed(msg.sender)) revert NotLicensed();
       dyad.mint(from, to, amount);
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
   }
@@ -117,7 +117,7 @@ contract VaultManager is IVaultManager {
       uint    from, 
       uint    amount 
   ) external {
-      if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
+      if (vaultSLL.isLicensed(msg.sender)) revert NotLicensed();
       dyad.burn(from, msg.sender, amount);
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
   }
