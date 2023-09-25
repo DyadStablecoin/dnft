@@ -84,6 +84,15 @@ contract VaultManagerTest is Test {
     vaultManager.vaults(id, 2); // out of bounds
   }
 
+  function testFail_TooManyVaults() public {
+    uint id = dNft.mintNft{value: 1 ether}(address(this));
+    for (uint i = 0; i < vaultManager.MAX_VAULTS(); i++) {
+      addVault(id, address(uint160(i)));
+    }
+    // this puts it exactly one over the limit and should fail
+    addVault(id, RANDOM_VAULT_1); 
+  }
+
   ///////////////////////////
   // remove
   function test_remove() public {
