@@ -43,6 +43,7 @@ contract VaultManager is IVaultManager {
     dyad = _dyad;
   }
 
+  /// @inheritdoc IVaultManager
   function add(
       uint    id,
       address vault
@@ -56,7 +57,7 @@ contract VaultManager is IVaultManager {
       emit Added(id, vault);
   }
 
-  // NOTE: Changes the order of vaults!
+  /// @inheritdoc IVaultManager
   function remove(
       uint id,
       uint index
@@ -71,6 +72,7 @@ contract VaultManager is IVaultManager {
       emit Removed(id, vault);
   }
 
+  /// @inheritdoc IVaultManager
   function collatRatio(
       uint id
   ) public 
@@ -81,6 +83,7 @@ contract VaultManager is IVaultManager {
       return totalUsdValue.divWadDown(_dyad);
   }
 
+  /// @inheritdoc IVaultManager
   function getVaultsUsdValue(
       uint id
   ) public 

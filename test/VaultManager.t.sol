@@ -93,6 +93,17 @@ contract VaultManagerTest is Test {
     addVault(id, RANDOM_VAULT_1); 
   }
 
+  function addFail_VaultNotLicensed() public {
+    uint id = dNft.mintNft{value: 1 ether}(address(this));
+    vaultManager.add(id, RANDOM_VAULT_1);
+  }
+
+  function testFail_AddSameVaultTwice() public {
+    uint id = dNft.mintNft{value: 1 ether}(address(this));
+    addVault(id, RANDOM_VAULT_1);
+    addVault(id, RANDOM_VAULT_1);
+  }
+
   ///////////////////////////
   // remove
   function test_remove() public {
@@ -116,6 +127,11 @@ contract VaultManagerTest is Test {
     assertEq(vaultManager.getVaultsCount(id), 1);
     vaultManager.remove(id, 0);
     assertEq(vaultManager.getVaultsCount(id), 0);
+  }
+
+  function testFail_RemoveNonExistentVault() public {
+    uint id = dNft.mintNft{value: 1 ether}(address(this));
+    vaultManager.remove(id, 0);
   }
 
   ///////////////////////////
