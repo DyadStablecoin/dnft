@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-import "forge-std/console.sol";
-
 import {IVaultManager} from "./interfaces/IVaultManager.sol";
 import {DNft} from "./DNft.sol";
 import {VaultSLL} from "./VaultSLL.sol";
@@ -109,6 +107,15 @@ contract VaultManager is IVaultManager {
   ) external {
       if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
       dyad.mint(from, to, amount);
+      if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
+  }
+
+  function burnDyad(
+      uint    from, 
+      uint    amount 
+  ) external {
+      if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
+      dyad.burn(from, to, amount);
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
   }
 
