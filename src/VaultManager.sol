@@ -89,7 +89,7 @@ contract VaultManager is IVaultManager {
   ) public 
     returns (uint) {
       uint totalUsdValue;
-      uint numberOfVaults = vaults[id].length;
+      uint numberOfVaults = vaults[id].length; // save gas
       for (uint i = 0; i < numberOfVaults; i++) {
         IVault vault = IVault(vaults[id][i]);
         uint usdValue;

@@ -46,17 +46,26 @@ interface IVaultManager {
 
   /**
    * @notice Calculate the collateralization ratio of a dNFT given by its ID.
-   * @dev The collat ratio is the ratio of the total USD value of associated vaults to the minted dyad tokens.
-   * @param id The unique identifier of the dNFT for which to calculate the collateralization ratio.
-   * @return The collateralization ratio as a unsigned integer. If the dNFT has not minted any dyad tokens, it returns the maximum possible unsigned integer value. Otherwise, it returns the collateralization ratio rounded down.
+   * @dev The collat ratio is the ratio of the total USD value of associated
+   *      vaults to the minted dyad tokens.
+   * @param id The unique identifier of the dNFT for which to calculate the 
+   *        collateralization ratio.
+   * @return The collateralization ratio as a unsigned integer. If the dNFT
+   *         has not minted any dyad tokens, it returns the maximum possible
+   *         unsigned integer value. Otherwise, it returns the collat ratio
+   *         rounded down.
    */
   function collatRatio(uint id) external returns (uint);
 
   /**
-   * @notice Calculate the total USD value of all vaults associated with a dNFT given by its ID.
-   * @dev The function iterates through all vaults associated with the dNFT, calculates the USD value of each vault, and aggregates them to obtain the total USD value.
+   * @notice Calculate the total USD value of all vaults associated with a
+   *         dNFT given by its ID.
+   * @dev The function iterates through all vaults associated with the dNFT, 
+   *      calculates the USD value of each vault, and aggregates them to obtain
+   *      the total USD value.
    * @param id The unique identifier of the dNFT 
-   * @return The total USD value of all vaults associated with the dNFT, represented as an unsigned integer.
+   * @return The total USD value of all vaults associated with the dNFT,
+   *         represented as an unsigned integer.
    */
   function getVaultsUsdValue(uint id) external returns (uint);
 }
