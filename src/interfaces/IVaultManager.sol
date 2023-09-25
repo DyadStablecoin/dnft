@@ -69,4 +69,26 @@ interface IVaultManager {
    *         represented as an unsigned integer.
    */
   function getVaultsUsdValue(uint id) external returns (uint);
+
+  /**
+   * @notice Mint dyad tokens from a dNFT to a specific address.
+   * @dev Function is only callable through a licensed vault.
+   * @param from The DNft id from which to mint.
+   * @param to The recipient address that will receive the minted dyad tokens.
+   * @param amount The amount of dyad tokens to mint.
+   * Reverts if:
+   *   - The caller is not a licensed vault.
+   *   - The collat ratio of the source address falls below the minimum required.
+   */
+  function mintDyad(uint from, address to, uint amount) external;
+
+  /**
+   * @notice Burn dyad tokens owned by the caller (dNFT owner).
+   * @dev Dyad tokens can be burned directly by the owner of the associated dNFT.
+   * @param from The unique identifier of the dNFT for which to burn dyad tokens.
+   * @param amount The amount of dyad tokens to burn.
+   * Reverts if:
+   *   - The caller is not the owner of the specified dNFT.
+   */
+  function burnDyad(uint from, uint amount) external;
 }

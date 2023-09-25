@@ -103,23 +103,25 @@ contract VaultManager is IVaultManager {
       return totalUsdValue;
   }
 
+  /// @inheritdoc IVaultManager
   function mintDyad(
       uint    from, 
       address to,
       uint    amount 
   ) external {
+      // you can only mint through a vault
       if (vaultSLL.isLicensed(msg.sender)) revert NotLicensed();
       dyad.mint(from, to, amount);
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
   }
 
   function burnDyad(
-      uint    from, 
-      uint    amount 
+      uint from, 
+      uint amount 
   ) external {
-      if (vaultSLL.isLicensed(msg.sender)) revert NotLicensed();
+      // you can directly burn your dyad if you are the DNft owner
+      if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
       dyad.burn(from, msg.sender, amount);
-      if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
   }
 
   function redeemDyad(
