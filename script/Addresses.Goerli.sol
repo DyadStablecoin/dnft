@@ -9,5 +9,6 @@ contract Addresses {
   address vaultManager_addr    = 0x1C0c439abd9958b55eBF7Fa8030b5fc725ca21cb;
   address staking_addr         = 0x9D5Fd41ee4A4A09c3135936C7B1595D6b3A779d3;
   address vault_addr           = 0xFaB3989658312862408eECCB6D815B95dC161ED0;
+  address vault2_addr           = 0xFaB3989658312862408eECCB6D815B95dC161ED0;
 }
 

@@ -12,6 +12,7 @@ import { DNft } from "../src/DNft.sol";
 import { Staking } from "../src/Staking.sol";
 import {Parameters} from "../src/params/Parameters.sol";
 import {IAggregatorV3} from "../src/interfaces/IAggregatorV3.sol";
+import {Faucet} from "../src/Faucet.sol";
 
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 
@@ -49,7 +50,16 @@ contract DeployBase is Script {
                                           "Wrapped Ether Shares",
                                           "WETH Shares"
                                         );
-
+      Faucet          faucet          = new Faucet();
+      Vault           vault2          = new Vault(
+                                          dNft,
+                                          vaultManager,
+                                          IAggregatorV3(0xb4c4a493AB6356497713A78FFA6c60FB53517c63),
+                                          staking, 
+                                          faucet, 
+                                          "satoshi mega coin",
+                                          "smc"
+                                        );
 
       vm.stopBroadcast();
   }

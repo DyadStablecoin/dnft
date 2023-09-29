@@ -17,6 +17,7 @@ contract AddVaults is Script, Addresses {
   VaultManager vaultManager       = VaultManager(vaultManager_addr);
   address staking                 = staking_addr;
   address vault                   = vault_addr;
+  address vault2                  = vault2_addr;
 
   function run() public {
     vm.startBroadcast();
@@ -35,6 +36,10 @@ contract AddVaults is Script, Addresses {
     vaultSLL.vote(id1, vault);
     vaultSLL.vote(id2, vault);
     vaultSLL.license(vault);
+
+    vaultSLL.vote(id1, vault2);
+    vaultSLL.vote(id2, vault2);
+    vaultSLL.license(vault2);
 
     vm.stopBroadcast();
   }
