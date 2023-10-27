@@ -38,7 +38,7 @@ contract DeployBase is Script {
 
       VaultManagerSLL vaultManagerSLL = new VaultManagerSLL(dNft);
       VaultSLL        vaultSLL        = new VaultSLL(dNft);
-      Dyad            dyad            = new Dyad(vaultManagerSLL);
+      Dyad            dyad            = new Dyad(dNft, vaultManagerSLL);
       VaultManager    vaultManager    = new VaultManager(dNft, vaultSLL, dyad);
       Staking         staking         = new Staking(dNft);
       Vault           vault           = new Vault(

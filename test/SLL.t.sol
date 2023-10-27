@@ -20,9 +20,9 @@ contract SLLTest is Test {
  function setUp() public {
    dNft = new DNft();
    sll  = new VaultManagerSLL(dNft);
-   dyad = new Dyad(sll);
+   dyad = new Dyad(dNft, sll);
  }
-
+ 
  function vote() public returns (uint) {
    uint id = dNft.mintNft{value: 1 ether}(address(this));
    sll.vote(id, RANDOM_VAULT);

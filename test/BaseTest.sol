@@ -29,7 +29,7 @@ contract BaseTest is Test {
     dNft = new DNft();
     vaultSLL = new VaultSLL(dNft);
     vaultManagerSLL  = new VaultManagerSLL(dNft);
-    dyad = new Dyad(vaultManagerSLL);
+    dyad = new Dyad(dNft, vaultManagerSLL);
     oracle = new OracleMock();
     token = new ERC20Mock();
     vaultManager = new VaultManager(dNft, vaultSLL, dyad);
