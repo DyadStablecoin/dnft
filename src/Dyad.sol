@@ -15,13 +15,17 @@ contract Dyad is ERC20("DYAD Stable", "DYAD", 18), IDyad {
 
   constructor(SLL _sll) { sll = _sll; }
 
+  modifier onlyLicensed() {
+    if (!sll.isLicensed(msg.sender)) revert NotLicensed();
+    _;
+  }
+
   /// @inheritdoc IDyad
   function mint(
       uint    id, // we trust the caller to use an id that exists
       address to,
       uint    amount
-  ) external {
-      if (!sll.isLicensed(msg.sender)) revert NotLicensed();
+  ) external onlyLicensed {
       mintedDyad[msg.sender][id] += amount;
       _mint(to, amount);
   }
@@ -31,8 +35,7 @@ contract Dyad is ERC20("DYAD Stable", "DYAD", 18), IDyad {
       uint    id, // we trust the caller to use an id that exists
       address from,
       uint    amount
-  ) external {
-      if (!sll.isLicensed(msg.sender)) revert NotLicensed();
+  ) external onlyLicensed {
       mintedDyad[msg.sender][id] -= amount;
       _burn(from, amount);
   }
