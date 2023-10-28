@@ -47,6 +47,13 @@ contract Vault is IVault, AccessControl, ERC4626 {
       _grantRole(TRANSFER_ROLE, address(_vaultManager));
   }
 
+  modifier ownerOrVaultManager(uint id) {
+    if (dNft.ownerOf(id) != msg.sender && address(vaultManager) != msg.sender) {
+      revert NotOwner();
+    }
+    _;
+  }
+
   /*//////////////////////////////////////////////////////////////
                         CUSTOM VAULT METHODS
   //////////////////////////////////////////////////////////////*/
@@ -112,29 +119,37 @@ contract Vault is IVault, AccessControl, ERC4626 {
     return super.mint(shares, address(uint160(id)));
   }
 
-  function withdraw(uint id, uint assets, address receiver) public returns (uint) { 
-    if (dNft.ownerOf(id) != msg.sender && address(vaultManager) != msg.sender) {
-      revert NotOwner();
-    }
-    address owner = address(uint160(id));
-    uint shares = previewWithdraw(assets); 
-    beforeWithdraw(assets, shares);
-    _burn(owner, shares);
-    emit Withdraw(msg.sender, receiver, owner, assets, shares);
-    asset.safeTransfer(receiver, assets);
+  function withdraw(
+    uint    id,
+    uint    assets,
+    address receiver
+  ) 
+    public 
+      ownerOrVaultManager(id) 
+    returns (uint) { 
+      address owner = address(uint160(id));
+      uint shares = previewWithdraw(assets); 
+      beforeWithdraw(assets, shares);
+      _burn(owner, shares);
+      emit Withdraw(msg.sender, receiver, owner, assets, shares);
+      asset.safeTransfer(receiver, assets);
   }
 
-  function redeem(uint id, uint shares, address receiver) public returns (uint) {
-    if (dNft.ownerOf(id) != msg.sender && address(vaultManager) != msg.sender) {
-      revert NotOwner();
-    }
-    address owner = address(uint160(id));
-    uint assets = previewRedeem(shares);
-    require(assets != 0, "ZERO_ASSETS");
-    beforeWithdraw(assets, shares);
-    _burn(owner, shares);
-    emit Withdraw(msg.sender, receiver, owner, assets, shares);
-    asset.safeTransfer(receiver, assets);
+  function redeem(
+    uint id,
+    uint shares,
+    address receiver
+  ) 
+    public 
+      ownerOrVaultManager(id) 
+    returns (uint) {
+      address owner = address(uint160(id));
+      uint assets = previewRedeem(shares);
+      require(assets != 0, "ZERO_ASSETS");
+      beforeWithdraw(assets, shares);
+      _burn(owner, shares);
+      emit Withdraw(msg.sender, receiver, owner, assets, shares);
+      asset.safeTransfer(receiver, assets);
   }
 
   /*//////////////////////////////////////////////////////////////
