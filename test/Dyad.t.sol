@@ -16,6 +16,11 @@ contract DyadTest is BaseTest {
     dyad.mint(id, address(this), AMOUNT);
   }
 
+  function testFail_dNftDoesNotExistForMint() public {
+    vm.prank(address(vaultManager));
+    dyad.mint(15, address(this), AMOUNT);
+  }
+
   function testFail_vaultManagerNotLicensedForMint() public {
     uint id = dNft.mintNft{value: 0.1 ether}(address(this));
 
@@ -35,6 +40,11 @@ contract DyadTest is BaseTest {
     dyad.burn(id, address(this), AMOUNT);
 
     assertEq(dyad.mintedDyad(address(vaultManager), id), 0);
+  }
+
+  function testFail_dNftDoesNotExistForBurn() public {
+    vm.prank(address(vaultManager));
+    dyad.mint(15, address(this), AMOUNT);
   }
 
   function testFail_vaultManagerNotLicensedForBurn() public {
