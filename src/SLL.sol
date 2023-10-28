@@ -6,6 +6,7 @@ import {DNft} from "./DNft.sol";
 
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 
+// SLL := Social Licensing Layer
 abstract contract SLL is ISLL {
   using FixedPointMathLib for uint;
 
@@ -14,9 +15,17 @@ abstract contract SLL is ISLL {
   uint public immutable LICENSE_THRESHOLD; 
   uint public immutable UNLICENSE_THRESHOLD; 
 
-  mapping (address => uint) public votes;                         // vault   => votes
-  mapping (uint    => mapping (address => bool)) public hasVoted; // dNft id => voted
-  mapping (address => bool) public isLicensed; // vault => is licensed
+  // vault => votes
+  mapping (address => uint)                      public votes; 
+  // dNft id => (vault => hasVoted)
+  mapping (uint    => mapping (address => bool)) public hasVoted; 
+  // vault => is licensed
+  mapping (address => bool)                      public isLicensed; 
+
+  modifier onlyOwner(uint id) {
+    if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner();
+    _;
+  }
 
   constructor(
     DNft _dNft, 
@@ -28,28 +37,33 @@ abstract contract SLL is ISLL {
     UNLICENSE_THRESHOLD = unlicenseThreshold;
   }
 
+  /// @inheritdoc ISLL
   function vote(
       uint    id,
       address vault
-  ) external {
-      if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner(); 
-      if (hasVoted[id][vault])            revert VotedBefore(); 
+  ) external 
+      onlyOwner(id) 
+    {
+      if (hasVoted[id][vault]) revert VotedBefore(); 
       hasVoted[id][vault] = true;
       votes[vault]       += 1;
       emit Voted(id, vault);
   }
 
+  /// @inheritdoc ISLL
   function removeVote(
       uint    id,
       address vault
-  ) external {
-      if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner();
-      if (!hasVoted[id][vault])           revert NotVotedBefore();
+  ) external 
+      onlyOwner(id) 
+    {
+      if (!hasVoted[id][vault]) revert NotVotedBefore();
       hasVoted[id][vault] = false;
       votes[vault]       -= 1;
       emit RemovedVote(id, vault);
   }
 
+  /// @inheritdoc ISLL
   function license(address vault) external {
     if (votes[vault].divWadDown(dNft.totalSupply()) <= LICENSE_THRESHOLD) {
       revert NotEnoughVotes();
@@ -58,6 +72,7 @@ abstract contract SLL is ISLL {
     emit Licensed(vault);
   }
 
+  /// @inheritdoc ISLL
   function removeLicense(address vault) external {
     if (votes[vault].divWadDown(dNft.totalSupply()) > UNLICENSE_THRESHOLD) {
       revert TooManyVotes();

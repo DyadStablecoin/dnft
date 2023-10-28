@@ -12,7 +12,7 @@ import { DNft } from "../src/DNft.sol";
 import { Staking } from "../src/Staking.sol";
 import {Parameters} from "../src/params/Parameters.sol";
 import {IAggregatorV3} from "../src/interfaces/IAggregatorV3.sol";
-import {Faucet} from "../src/Faucet.sol";
+import {Faucet} from "../src/utils/Faucet.sol";
 
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 
