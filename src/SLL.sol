@@ -32,7 +32,7 @@ abstract contract SLL is ISLL {
     uint licenseThreshold,
     uint unlicenseThreshold
   ) { 
-    dNft = _dNft;
+    dNft                = _dNft;
     LICENSE_THRESHOLD   = licenseThreshold;
     UNLICENSE_THRESHOLD = unlicenseThreshold;
   }
