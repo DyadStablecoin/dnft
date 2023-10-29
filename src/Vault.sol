@@ -119,6 +119,7 @@ contract Vault is IVault, AccessControl, ERC4626 {
     return super.mint(shares, address(uint160(id)));
   }
 
+  /// @inheritdoc IVault
   function withdraw(
     uint    id,
     uint    assets,
@@ -126,7 +127,7 @@ contract Vault is IVault, AccessControl, ERC4626 {
   ) 
     public 
       ownerOrVaultManager(id) 
-    returns (uint) { 
+    returns (uint shares) { 
       address owner = address(uint160(id));
       uint shares = previewWithdraw(assets); 
       beforeWithdraw(assets, shares);
@@ -135,14 +136,15 @@ contract Vault is IVault, AccessControl, ERC4626 {
       asset.safeTransfer(receiver, assets);
   }
 
+  /// @inheritdoc IVault
   function redeem(
-    uint id,
-    uint shares,
+    uint    id,
+    uint    shares,
     address receiver
   ) 
     public 
       ownerOrVaultManager(id) 
-    returns (uint) {
+    returns (uint assets) {
       address owner = address(uint160(id));
       uint assets = previewRedeem(shares);
       require(assets != 0, "ZERO_ASSETS");
