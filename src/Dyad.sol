@@ -2,8 +2,8 @@
 pragma solidity =0.8.17;
 
 import {IDyad} from "./interfaces/IDyad.sol";
-import {DNft} from "./DNft.sol";
-import {SLL} from "./SLL.sol";
+import {DNft}  from "./DNft.sol";
+import {SLL}   from "./SLL.sol";
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 
 contract Dyad is ERC20("DYAD Stable", "DYAD", 18), IDyad {

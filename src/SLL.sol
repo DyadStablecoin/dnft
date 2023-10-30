@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-import {ISLL} from "./interfaces/ISLL.sol";
-import {DNft} from "./DNft.sol";
-
+import {ISLL}              from "./interfaces/ISLL.sol";
+import {DNft}              from "./DNft.sol";
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 
 // SLL := Social Licensing Layer
@@ -12,8 +11,8 @@ abstract contract SLL is ISLL {
 
   DNft public immutable dNft;
 
-  uint public immutable LICENSE_THRESHOLD; 
-  uint public immutable UNLICENSE_THRESHOLD; 
+  uint public immutable        LICENSE_THRESHOLD; 
+  uint public immutable REMOVE_LICENSE_THRESHOLD; 
 
   // vault => votes
   mapping (address => uint)                      public votes; 
@@ -30,11 +29,11 @@ abstract contract SLL is ISLL {
   constructor(
     DNft _dNft, 
     uint licenseThreshold,
-    uint unlicenseThreshold
+    uint removeLicenseThreshold
   ) { 
-    dNft                = _dNft;
-    LICENSE_THRESHOLD   = licenseThreshold;
-    UNLICENSE_THRESHOLD = unlicenseThreshold;
+    dNft                     = _dNft;
+    LICENSE_THRESHOLD        = licenseThreshold;
+    REMOVE_LICENSE_THRESHOLD = removeLicenseThreshold;
   }
 
   /// @inheritdoc ISLL
@@ -74,7 +73,7 @@ abstract contract SLL is ISLL {
 
   /// @inheritdoc ISLL
   function removeLicense(address vault) external {
-    if (votes[vault].divWadDown(dNft.totalSupply()) > UNLICENSE_THRESHOLD) {
+    if (votes[vault].divWadDown(dNft.totalSupply()) > REMOVE_LICENSE_THRESHOLD) {
       revert TooManyVotes();
     }
     isLicensed[vault] = false;
