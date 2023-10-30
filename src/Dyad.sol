@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.17;
 
-import {DNft} from "./DNft.sol";
 import {IDyad} from "./interfaces/IDyad.sol";
+import {DNft} from "./DNft.sol";
 import {SLL} from "./SLL.sol";
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 
@@ -10,7 +10,7 @@ contract Dyad is ERC20("DYAD Stable", "DYAD", 18), IDyad {
   DNft public immutable dNft;
   SLL  public immutable sll;
 
-  // vault manager => (dNft id => minted dyad)
+  // vault manager => (dNFT ID => dyad)
   mapping (address => mapping (uint => uint)) public mintedDyad; 
 
   constructor(
@@ -21,13 +21,14 @@ contract Dyad is ERC20("DYAD Stable", "DYAD", 18), IDyad {
     sll  = _sll;
   }
 
-  modifier onlyLicensed() {
-    if (!sll.isLicensed(msg.sender)) revert NotLicensed();
-    _;
+  modifier exists(uint id) {
+    if (dNft.ownerOf(id) == address(0)) revert DNftDoesNotExist(); 
+    _; 
   }
 
-  modifier exists(uint id) {
-    if (dNft.ownerOf(id) == address(0)) revert DNftDoesNotExist(); _; 
+  modifier licensed() {
+    if (!sll.isLicensed(msg.sender)) revert NotLicensed();
+    _;
   }
 
   /// @inheritdoc IDyad
@@ -37,7 +38,7 @@ contract Dyad is ERC20("DYAD Stable", "DYAD", 18), IDyad {
       uint    amount
   ) external 
       exists(id) 
-      onlyLicensed 
+      licensed 
     {
       mintedDyad[msg.sender][id] += amount;
       _mint(to, amount);
@@ -50,7 +51,7 @@ contract Dyad is ERC20("DYAD Stable", "DYAD", 18), IDyad {
       uint    amount
   ) external 
       exists(id) 
-      onlyLicensed 
+      licensed 
     {
       mintedDyad[msg.sender][id] -= amount;
       _burn(from, amount);
