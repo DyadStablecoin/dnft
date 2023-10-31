@@ -3,13 +3,12 @@ pragma solidity =0.8.17;
 
 import "forge-std/console.sol";
 
+import {IVault} from "./interfaces/IVault.sol";
+import {IAggregatorV3} from "./interfaces/IAggregatorV3.sol";
 import {DNft} from "./DNft.sol";
 import {Dyad} from "./Dyad.sol";
 import {Staking} from "./Staking.sol";
 import {VaultManager} from "./VaultManager.sol";
-import {IVault} from "./interfaces/IVault.sol";
-import {IAggregatorV3} from "./interfaces/IAggregatorV3.sol";
-
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {ERC4626} from "@solmate/src/mixins/ERC4626.sol";
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
