@@ -109,19 +109,9 @@ contract VaultManager is IVaultManager {
       address to,
       uint    amount 
   ) external {
-      // you can only mint through a vault
-      if (vaultSLL.isLicensed(msg.sender)) revert NotLicensed();
       dyad.mint(from, to, amount);
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
-  }
-
-  function burnDyad(
-      uint from, 
-      uint amount 
-  ) external {
-      // you can directly burn your dyad if you are the DNft owner
-      if (dNft.ownerOf(from) != msg.sender) revert NotOwner();
-      dyad.burn(from, msg.sender, amount);
+      emit Minted(from, to, amount);
   }
 
   function redeemDyad(
@@ -135,6 +125,7 @@ contract VaultManager is IVaultManager {
       dyad.burn(from, msg.sender, amount);
       uint collat = amount * (10**_vault.decimals()) / _vault.collatPrice();
       _vault.withdraw(from, collat, to);
+      emit Redeemed(vault, from, to, amount);
   }
 
   function liquidate(
@@ -160,7 +151,7 @@ contract VaultManager is IVaultManager {
         );
         vault.mint(address(uint160(from)), shares.mulWadDown(1e18 + sharesBonus));
       }
-      emit Liquidation(from, to);
+      emit Liquidated(from, to);
   }
 
   /*//////////////////////////////////////////////////////////////
