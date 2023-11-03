@@ -9,7 +9,6 @@ import {Dyad} from "./Dyad.sol";
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 import {FixedPointMathLib} from "@solmate/src/utils/FixedPointMathLib.sol";
 
-// TODO: refactor
 interface IVault {
   function collatPrice() external view returns (uint);
   function decimals()    external view returns (uint);
