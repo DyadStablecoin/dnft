@@ -108,6 +108,7 @@ contract VaultManager is IVaultManager {
       address to,
       uint    amount 
   ) external {
+      if (dNft.ownerOf(from) != msg.sender)              revert NotOwner();
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
       dyad.mint(from, to, amount);
       emit Minted(from, to, amount);
@@ -131,6 +132,8 @@ contract VaultManager is IVaultManager {
       uint from, 
       uint to 
   ) external {
+      if (dNft.ownerOf(from) == address(0)) revert DNftDoesNotExist(); 
+      if (dNft.ownerOf(to)   == address(0)) revert DNftDoesNotExist(); 
       if (collatRatio(from) >= MIN_COLLATERIZATION_RATIO) revert CR_NotLowEnough();
       uint mintedDyad = dyad.mintedDyad(address(this), from);
       dyad.burn(from, msg.sender, mintedDyad);

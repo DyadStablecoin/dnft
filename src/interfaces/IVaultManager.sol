@@ -12,6 +12,7 @@ interface IVaultManager {
   error CR_NotLowEnough();
   error CrTooLow();
   error VaultAlreadyAdded();
+  error DNftDoesNotExist();
 
   event Added  (uint indexed id, address indexed vault);
   event Removed(uint indexed id, address indexed vault);
