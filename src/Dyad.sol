@@ -8,7 +8,7 @@ import {ERC20} from "@solmate/src/tokens/ERC20.sol";
 
 contract Dyad is ERC20("DYAD Stable", "DYAD", 18), IDyad {
   DNft public immutable dNft;
-  SLL  public immutable sll;
+  SLL  public immutable sll;  // Vault Manager SLL
 
   // vault manager => (dNFT ID => dyad)
   mapping (address => mapping (uint => uint)) public mintedDyad; 
@@ -18,7 +18,7 @@ contract Dyad is ERC20("DYAD Stable", "DYAD", 18), IDyad {
     SLL  _sll
   ) { 
     dNft = _dNft;
-    sll  = _sll;
+    sll  = _sll; 
   }
 
   modifier exists(uint id) {

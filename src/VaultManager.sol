@@ -141,7 +141,7 @@ contract VaultManager is IVaultManager {
       // TODO: refactor so we don't re-calculate getVaultsUsdValue
       uint totalUsdValue = getVaultsUsdValue(from);
 
-      uint sharesBonus   = mintedDyad.divWadDown(totalUsdValue) - 66e16;
+      uint sharesBonus    = mintedDyad.divWadDown(totalUsdValue) - 66e16;
       uint numberOfVaults = vaults[from].length;
       for (uint i = 0; i < numberOfVaults; i++) {
         IVault vault = IVault(vaults[from][i]);
