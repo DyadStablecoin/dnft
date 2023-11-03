@@ -94,7 +94,6 @@ contract VaultManager is IVaultManager {
         IVault vault = IVault(vaults[id][i]);
         uint usdValue;
         if (vaultSLL.isLicensed(address(vault))) {
-          // use shares to calculate usd value
           uint shares = vault.balanceOf(address(uint160(id)));
           usdValue = vault.convertToAssets(shares) * vault.collatPrice();
         }
@@ -109,8 +108,8 @@ contract VaultManager is IVaultManager {
       address to,
       uint    amount 
   ) external {
-      dyad.mint(from, to, amount);
       if (collatRatio(from) < MIN_COLLATERIZATION_RATIO) revert CrTooLow(); 
+      dyad.mint(from, to, amount);
       emit Minted(from, to, amount);
   }
 

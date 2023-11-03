@@ -108,14 +108,24 @@ contract Vault is IVault, AccessControl, ERC4626 {
   /*//////////////////////////////////////////////////////////////
                         "ERC4626" FUNCTIONS
   //////////////////////////////////////////////////////////////*/
-  function deposit(uint id, uint assets) public returns (uint) {
-    if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-    return super.deposit(assets, address(uint160(id)));
+  function deposit(
+    uint id,
+    uint assets
+  ) 
+    public 
+    returns (uint) {
+      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+      return super.deposit(assets, address(uint160(id)));
   }
 
-  function mint(uint id, uint shares) public returns (uint) {
-    if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
-    return super.mint(shares, address(uint160(id)));
+  function mint(
+    uint id,
+    uint shares
+  ) 
+    public 
+    returns (uint) {
+      if (dNft.ownerOf(id) != msg.sender) revert NotOwner();
+      return super.mint(shares, address(uint160(id)));
   }
 
   /// @inheritdoc IVault
@@ -126,13 +136,14 @@ contract Vault is IVault, AccessControl, ERC4626 {
   ) 
     public 
       ownerOrVaultManager(id) 
-    returns (uint shares) { 
+    returns (uint) { 
       address owner = address(uint160(id));
       uint shares = previewWithdraw(assets); 
       beforeWithdraw(assets, shares);
       _burn(owner, shares);
       emit Withdraw(msg.sender, receiver, owner, assets, shares);
       asset.safeTransfer(receiver, assets);
+      return shares;
   }
 
   /// @inheritdoc IVault
@@ -143,7 +154,7 @@ contract Vault is IVault, AccessControl, ERC4626 {
   ) 
     public 
       ownerOrVaultManager(id) 
-    returns (uint assets) {
+    returns (uint) {
       address owner = address(uint160(id));
       uint assets = previewRedeem(shares);
       require(assets != 0, "ZERO_ASSETS");
@@ -151,6 +162,7 @@ contract Vault is IVault, AccessControl, ERC4626 {
       _burn(owner, shares);
       emit Withdraw(msg.sender, receiver, owner, assets, shares);
       asset.safeTransfer(receiver, assets);
+      return assets;
   }
 
   /*//////////////////////////////////////////////////////////////
