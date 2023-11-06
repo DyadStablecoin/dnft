@@ -21,7 +21,7 @@ abstract contract SLL is ISLL {
   // vault => is licensed
   mapping (address => bool)                      public isLicensed; 
   // vault => license removal time
-  mapping (uint => uint)                         public licenseRemovalTime;
+  mapping (address => uint)                      public licenseRemovalTime;
 
   modifier onlyOwner(uint id) {
     if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner();
