@@ -20,6 +20,8 @@ abstract contract SLL is ISLL {
   mapping (uint    => mapping (address => bool)) public hasVoted; 
   // vault => is licensed
   mapping (address => bool)                      public isLicensed; 
+  // vault => license removal time
+  mapping (uint => uint)                         public licenseRemovalTime;
 
   modifier onlyOwner(uint id) {
     if (dNft.ownerOf(id) != msg.sender) revert OnlyOwner();
@@ -76,7 +78,8 @@ abstract contract SLL is ISLL {
     if (votes[vault].divWadDown(dNft.totalSupply()) > REMOVE_LICENSE_THRESHOLD) {
       revert TooManyVotes();
     }
-    isLicensed[vault] = false;
+    isLicensed[vault]         = false;
+    licenseRemovalTime[vault] = block.timestamp;
     emit RemovedLicense(vault);
   }
 }
