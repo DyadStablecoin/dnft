@@ -150,7 +150,7 @@ contract VaultManager is IVaultManager {
           address(uint160(to)),
           shares
         );
-        vault.mint(address(uint160(from)), shares.mulWadDown(1e18 + sharesBonus));
+        vault.mint(address(uint160(to)), shares.mulWadDown(1e18 + sharesBonus));
       }
       emit Liquidated(from, to);
   }
