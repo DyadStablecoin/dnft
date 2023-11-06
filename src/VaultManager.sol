@@ -95,6 +95,17 @@ contract VaultManager is IVaultManager {
         if (vaultSLL.isLicensed(address(vault))) {
           uint shares = vault.balanceOf(address(uint160(id)));
           usdValue = vault.convertToAssets(shares) * vault.collatPrice();
+        } else {
+          uint removalTime = vaultSLL.licenseRemovalTime(address(vault));
+          if (removalTime != 0) {
+            uint diff = block.timestamp - removalTime;
+            if (diff < 1 days) {
+              uint factor = 1e18 - (diff * 1e18 / 1 days);
+              uint shares = vault.balanceOf(address(uint160(id)));
+              usdValue = vault.convertToAssets(shares) * vault.collatPrice();
+              usdValue = usdValue * factor / 1e18;
+            }
+          }
         }
         totalUsdValue += usdValue / (10**vault.decimals());
       }
