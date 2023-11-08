@@ -3,7 +3,7 @@ pragma solidity =0.8.17;
 
 import {IVaultManager} from "./interfaces/IVaultManager.sol";
 import {DNft} from "./DNft.sol";
-import {VaultSLL} from "./VaultSLL.sol";
+import {Licenser} from "./Licenser.sol";
 import {Dyad} from "./Dyad.sol";
 
 import {ERC20} from "@solmate/src/tokens/ERC20.sol";
@@ -23,7 +23,7 @@ contract VaultManager is IVaultManager {
   using FixedPointMathLib for uint;
 
   DNft      public immutable dNft;
-  VaultSLL  public immutable vaultSLL;
+  Licenser  public immutable licenser;
   Dyad      public immutable dyad;
 
   uint public constant MAX_VAULTS = 5;
@@ -34,11 +34,11 @@ contract VaultManager is IVaultManager {
 
   constructor(
     DNft      _dNft,
-    VaultSLL  _vaultSLL,
+    Licenser  _licenser,
     Dyad      _dyad
   ) {
     dNft      = _dNft;
-    vaultSLL  = _vaultSLL;
+    licenser  = _licenser;
     dyad      = _dyad;
   }
 
@@ -49,7 +49,7 @@ contract VaultManager is IVaultManager {
   ) external {
       if (dNft.ownerOf(id)  != msg.sender) revert OnlyOwner(); 
       if (vaults[id].length >= MAX_VAULTS) revert TooManyVaults();
-      if (!vaultSLL.isLicensed(vault))     revert VaultNotLicensed();
+      if (!licenser.isLicensed(vault))     revert VaultNotLicensed();
       if (isDNftVault[id][vault])          revert VaultAlreadyAdded();
       vaults[id].push(vault);
       isDNftVault[id][vault] = true;
@@ -92,7 +92,7 @@ contract VaultManager is IVaultManager {
       for (uint i = 0; i < numberOfVaults; i++) {
         IVault vault = IVault(vaults[id][i]);
         uint usdValue;
-        if (vaultSLL.isLicensed(address(vault))) {
+        if (licenser.isLicensed(address(vault))) {
           uint shares = vault.balanceOf(address(uint160(id)));
           usdValue = vault.convertToAssets(shares) * vault.collatPrice();
         }
